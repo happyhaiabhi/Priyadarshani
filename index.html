@@ -85,21 +85,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ch-all-item.active .ch-all-label{color:var(--gold);}
 .ch-all-count{font-size:0.62rem;font-weight:600;background:var(--surface3);color:var(--text3);padding:1px 7px;border-radius:8px;}
 .ch-all-item.active .ch-all-count{background:var(--gold-dim);color:var(--gold);}
-
-/* CHAPTER CARD GRID */
-.chapter-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding:8px 12px;background:transparent;}
-.ch-all-item{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;transition:all 0.15s;background:var(--surface2);border:1.5px solid rgba(201,168,76,0.3);border-radius:10px;margin-bottom:6px;grid-column:1/-1;}
-.ch-all-item:hover{background:var(--surface3);border-color:rgba(201,168,76,0.5);}
-.ch-all-label{flex:1;font-size:0.72rem;font-weight:600;color:var(--text2);}
-.ch-all-item:hover .ch-all-label{color:var(--gold);}
-.ch-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px 10px;cursor:pointer;transition:all 0.18s;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;text-align:center;}
-.ch-item:hover{background:var(--surface3);border-color:rgba(201,168,76,0.35);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.3);}
-.ch-item.active{background:var(--blue-dim);border-color:var(--blue);box-shadow:0 4px 12px rgba(59,130,246,0.2);}
-.ch-item-label{font-size:0.65rem;color:var(--text3);line-height:1.2;font-weight:500;}
-.ch-item.active .ch-item-label{color:var(--text);font-weight:600;}
-.ch-item-badge{font-size:0.58rem;font-weight:600;background:var(--surface3);color:var(--text3);padding:2px 6px;border-radius:6px;}
-.ch-item.active .ch-item-badge{background:var(--blue-dim);color:var(--blue);}
-.ch-checkbox{cursor:pointer;}
+.ch-item{display:flex;align-items:center;gap:8px;padding:7px 14px 7px 44px;cursor:pointer;transition:background 0.15s;border-left:2px solid transparent;position:relative;}
+.ch-item::before{content:'';position:absolute;left:35px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--border2);transition:background 0.2s;}
+.ch-item:hover{background:rgba(255,255,255,0.03);} .ch-item:hover::before{background:var(--text3);}
+.ch-item.active{background:var(--blue-dim);border-left-color:var(--blue);} .ch-item.active::before{background:var(--blue);}
+.ch-item-label{flex:1;font-size:0.7rem;color:var(--text3);line-height:1.3;} .ch-item.active .ch-item-label{color:var(--text);}
+.ch-item-badge{font-size:0.6rem;font-weight:600;background:var(--surface3);color:var(--text3);padding:1px 6px;border-radius:8px;} .ch-item.active .ch-item-badge{background:var(--blue-dim);color:var(--blue);}
 .sidebar-nav{padding:8px 12px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:4px;}
 .nav-btn{display:flex;align-items:center;gap:8px;padding:7px 11px;border-radius:7px;background:transparent;border:1px solid var(--border);color:var(--text3);font-size:0.72rem;cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;width:100%;}
 .nav-btn:hover{border-color:var(--border2);color:var(--text2);background:var(--surface2);}
@@ -464,7 +455,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 const SUBJECTS_CONFIG = [
   { id:'modern_history',  name:'Modern History',   icon:'📜', file:'data/modern_history.json'  },
   { id:'ancient_history', name:'Ancient History',  icon:'🏛️', file:'data/ancient_history.json' },
-  { id:'medieval_history', name:'medieval History',  icon:'🏛️', file:'data/medieval_history.json' },
   { id:'polity',          name:'Indian Polity',    icon:'⚖️', file:'data/polity.json'           },
   { id:'economy',         name:'Indian Economy',   icon:'💹', file:'data/economy.json'          },
   { id:'world_geography', name:'World Geography',  icon:'🌍', file:'data/world_geography.json'  },
@@ -614,15 +604,31 @@ function processData(data, subjId) {
 function renderChapterSidebar(subjId) {
   const list=document.getElementById('ch-list-'+subjId); if(!list)return;
   selectedChapters.clear();
-  let html=`<div class="ch-all-item" id="ch-all-item" onclick="toggleSelectAll()">
-    <input type="checkbox" class="ch-checkbox" id="select-all-checkbox" onchange="toggleSelectAll()">
-    <span class="ch-all-label">📚 Select All</span>
+  let html=`<div class="ch-all-item" id="ch-all-item" style="display:flex;align-items:center;gap:8px;padding:8px 14px 8px 44px;cursor:pointer;transition:background 0.15s;border-left:2px solid transparent;" onclick="toggleSelectAll()">
+    <input type="checkbox" id="select-all-checkbox" style="cursor:pointer;" onchange="toggleSelectAll()">
+    <span class="ch-all-label" style="flex:1;">📚 Select All</span>
     <span class="ch-all-count">${allQuestions.length}</span></div>`;
   Object.entries(chapterMap).forEach(([name,qs])=>{
-    html+=`<div class="ch-item" data-chapter="${name}" onclick="toggleChapter('${encodeURIComponent(name)}')">
-      <input type="checkbox" class="ch-checkbox" data-chapter="${name}" onchange="toggleChapter('${encodeURIComponent(name)}')">
-      <span class="ch-item-label">${name}</span>
-      <span class="ch-item-badge">${qs.length}</span></div>`;
+    html+=`<div class="ch-item" data-chapter="${name}" style="display:flex;align-items:center;gap:8px;padding:7px 14px 7px 44px;cursor:pointer;transition:background 0.15s;border-left:2px solid transparent;position:relative;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background=''">
+      <input type="checkbox" class="ch-checkbox" data-chapter="${name}" style="cursor:pointer;" onchange="toggleChapter('${encodeURIComponent(name)}')">
+      <span class="ch-item-label" style="flex:1;font-size:0.7rem;color:var(--text3);line-height:1.3;">${name}</span>
+      <span class="ch-item-badge" style="font-size:0.6rem;font-weight:600;background:var(--surface3);color:var(--text3);padding:1px 6px;border-radius:8px;">${qs.length}</span></div>`;
+  });
+  list.innerHTML=html;
+}
+
+function renderChapterSidebar(subjId) {
+  const list=document.getElementById('ch-list-'+subjId); if(!list)return;
+  selectedChapters.clear();
+  let html=`<div class="ch-all-item" id="ch-all-item" style="display:flex;align-items:center;gap:8px;padding:8px 14px 8px 44px;cursor:pointer;transition:background 0.15s;border-left:2px solid transparent;" onclick="toggleSelectAll()">
+    <input type="checkbox" id="select-all-checkbox" style="cursor:pointer;" onchange="toggleSelectAll()">
+    <span class="ch-all-label" style="flex:1;">📚 Select All</span>
+    <span class="ch-all-count">${allQuestions.length}</span></div>`;
+  Object.entries(chapterMap).forEach(([name,qs])=>{
+    html+=`<div class="ch-item" data-chapter="${name}" style="display:flex;align-items:center;gap:8px;padding:7px 14px 7px 44px;cursor:pointer;transition:background 0.15s;border-left:2px solid transparent;position:relative;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background=''">
+      <input type="checkbox" class="ch-checkbox" data-chapter="${name}" style="cursor:pointer;" onchange="toggleChapter('${encodeURIComponent(name)}')">
+      <span class="ch-item-label" style="flex:1;font-size:0.7rem;color:var(--text3);line-height:1.3;">${name}</span>
+      <span class="ch-item-badge" style="font-size:0.6rem;font-weight:600;background:var(--surface3);color:var(--text3);padding:1px 6px;border-radius:8px;">${qs.length}</span></div>`;
   });
   list.innerHTML=html;
 }
