@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz — Priyadarshani BPSC</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body class="quiz-page">
+
+  <div class="bg-grid"></div>
+
+  <!-- Quiz Header -->
+  <header class="quiz-header">
+    <a href="index.html" class="btn-home">← Home</a>
+    <div class="quiz-header-center">
+      <span class="quiz-subject-label" id="quizSubjectLabel">Loading…</span>
+      <span class="quiz-chapter-label" id="quizChapterLabel"></span>
+    </div>
+    <div class="quiz-header-right">
+      <span class="quiz-score-badge" id="scoreBadge">0 / 0</span>
+    </div>
+  </header>
+
+  <!-- Progress bar -->
+  <div class="progress-rail">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+
+  <!-- Quiz body -->
+  <main class="quiz-main" id="quizMain">
+
+    <!-- Loading state -->
+    <div class="quiz-loading" id="quizLoading">
+      <div class="loader-ring"></div>
+      <p>Loading questions…</p>
+    </div>
+
+    <!-- Question card -->
+    <div class="question-wrap" id="questionWrap" hidden>
+      <div class="question-meta" id="questionMeta"></div>
+
+      <div class="question-counter">
+        <span id="qCurrent">1</span> / <span id="qTotal">—</span>
+      </div>
+
+      <div class="question-card" id="questionCard">
+        <p class="question-text" id="questionText"></p>
+
+        <div class="options-grid" id="optionsGrid"></div>
+
+        <!-- Explanation (revealed after answer) -->
+        <div class="explanation-box" id="explanationBox" hidden>
+          <div class="explanation-header">
+            <span class="expl-icon">💡</span>
+            <span>Explanation</span>
+          </div>
+          <p id="explanationText"></p>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="quiz-nav">
+        <button class="btn-nav btn-prev" id="btnPrev" disabled>← Prev</button>
+        <button class="btn-nav btn-skip" id="btnSkip">Skip</button>
+        <button class="btn-nav btn-next" id="btnNext" disabled>Next →</button>
+      </div>
+    </div>
+
+    <!-- Results screen -->
+    <div class="results-screen" id="resultsScreen" hidden>
+      <div class="results-card">
+        <div class="result-emoji" id="resultEmoji">🎉</div>
+        <h2 class="result-title">Quiz Complete!</h2>
+        <div class="result-score-ring">
+          <svg viewBox="0 0 120 120" class="ring-svg">
+            <circle cx="60" cy="60" r="52" class="ring-bg" />
+            <circle cx="60" cy="60" r="52" class="ring-progress" id="ringProgress" />
+          </svg>
+          <div class="ring-text">
+            <span class="ring-percent" id="ringPercent">—</span>
+            <span class="ring-label">Score</span>
+          </div>
+        </div>
+        <div class="result-stats">
+          <div class="rs-item correct"><span id="rsCorrect">—</span><label>Correct</label></div>
+          <div class="rs-item wrong"><span id="rsWrong">—</span><label>Wrong</label></div>
+          <div class="rs-item skipped"><span id="rsSkipped">—</span><label>Skipped</label></div>
+        </div>
+        <div class="result-actions">
+          <button class="btn-result" id="btnRetry">🔁 Retry</button>
+          <button class="btn-result btn-result-outline" id="btnReview">📋 Review</button>
+          <a href="index.html" class="btn-result btn-result-ghost">🏠 Home</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review screen -->
+    <div class="review-screen" id="reviewScreen" hidden>
+      <button class="btn-back-review" id="btnBackResult">← Back to Results</button>
+      <h2 class="review-title">Answer Review</h2>
+      <div class="review-list" id="reviewList"></div>
+    </div>
+
+  </main>
+
+  <script src="js/quiz.js"></script>
+</body>
+</html>
