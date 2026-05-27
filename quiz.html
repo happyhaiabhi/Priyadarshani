@@ -1,112 +1,1079 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quiz — Priyadarshani BPSC</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — Priyadarshani BPSC</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080c12; --bg2:#0d1219; --surface:#111720; --surface2:#17202e; --surface3:#1d2a3a;
+  --border:#1f2e40; --border2:#263547;
+  --gold:#c9a84c; --gold2:#f0c96a; --gold-dim:rgba(201,168,76,0.12); --gold-glow:rgba(201,168,76,0.25);
+  --blue:#3b82f6; --blue-dim:rgba(59,130,246,0.14);
+  --green:#22c55e; --green-dim:rgba(34,197,94,0.12);
+  --red:#ef4444; --red-dim:rgba(239,68,68,0.12);
+  --purple:#a78bfa; --purple-dim:rgba(167,139,250,0.12);
+  --orange:#f97316; --orange-dim:rgba(249,115,22,0.12);
+  --cyan:#06b6d4; --cyan-dim:rgba(6,182,212,0.12);
+  --text:#e2e8f0; --text2:#94a3b8; --text3:#64748b;
+  --opt-bg:#1a2236; --opt-hover:#1e293b; --opt-selected-bg:rgba(59,130,246,0.14); --opt-selected-border:#3b82f6;
+  --sidebar-w:270px;
+}
+html[data-theme="light"] {
+  --bg:#f0f2f8; --bg2:#e8eaf4; --surface:#ffffff; --surface2:#eef0f8; --surface3:#e2e6f5;
+  --border:#d4d8ee; --border2:#bcc3e8;
+  --gold:#b8860b; --gold2:#d4a017; --gold-dim:rgba(184,134,11,0.10);
+  --blue:#1a56db; --blue-dim:rgba(26,86,219,0.10);
+  --green:#16a34a; --green-dim:rgba(22,163,74,0.10);
+  --red:#dc2626; --red-dim:rgba(220,38,38,0.10);
+  --purple:#7c3aed; --purple-dim:rgba(124,58,237,0.10);
+  --orange:#ea6c00; --orange-dim:rgba(234,108,0,0.10);
+  --cyan:#0891b2; --cyan-dim:rgba(8,145,178,0.10);
+  --text:#1e2a45; --text2:#4b5a78; --text3:#7b8fad;
+  --opt-bg:#eaecf8; --opt-hover:#dde2f5; --opt-selected-bg:rgba(26,86,219,0.10); --opt-selected-border:#1a56db;
+}
+html[data-theme="light"] body { background:var(--bg); }
+html[data-theme="light"] .bg-grid { background-image:linear-gradient(rgba(26,86,219,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(26,86,219,0.04) 1px,transparent 1px);background-size:40px 40px; }
+html[data-theme="light"] .q-text { color:#1a56db; font-weight:500; }
+html[data-theme="light"] .opt-btn.selected .opt-text { color:#1a56db; }
+html[data-theme="light"] .opt-btn.correct .opt-text { color:#16a34a; }
+html[data-theme="light"] .opt-btn.wrong .opt-text { color:#dc2626; }
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-track{background:transparent;} ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+
+.screen{display:none;} .screen.active{display:flex;}
+#setup-screen{min-height:100vh;}
+#quiz-screen{height:100vh;flex-direction:column;}
+#result-screen{min-height:100vh;flex-direction:column;align-items:center;padding:40px 24px;}
+
+.bg-grid{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(201,168,76,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,0.03) 1px,transparent 1px);
+  background-size:40px 40px;}
+.bg-radial{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 80% 60% at 60% 20%,rgba(59,130,246,0.06) 0%,transparent 60%),
+             radial-gradient(ellipse 60% 50% at 20% 80%,rgba(201,168,76,0.05) 0%,transparent 60%);}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;position:relative;z-index:2;}
+.sidebar-logo{padding:16px 18px 14px;border-bottom:1px solid var(--border);}
+.logo-tag{font-size:0.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:5px;display:block;}
+.sidebar-logo h2{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:var(--text);letter-spacing:0.3px;line-height:1.3;}
+.sidebar-subtitle{font-size:0.65rem;color:var(--text3);margin-top:4px;}
+.subject-nav{overflow-y:auto;flex:1;padding:6px 0;}
+.subject-item{border-bottom:1px solid var(--border);}
+.subj-header{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;transition:background 0.15s;user-select:none;}
+.subj-header:hover{background:rgba(255,255,255,0.03);}
+.subj-header.active{background:linear-gradient(90deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));border-left:2px solid var(--gold);}
+.subj-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;background:var(--surface2);border:1px solid var(--border);transition:all 0.2s;}
+.subj-header.active .subj-icon{background:var(--gold-dim);border-color:var(--gold);}
+.subj-info{flex:1;min-width:0;}
+.subj-name{font-size:0.74rem;font-weight:500;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.subj-header.active .subj-name{color:var(--gold);}
+.subj-meta{font-size:0.6rem;color:var(--text3);margin-top:2px;}
+.subj-arrow{font-size:0.6rem;color:var(--text3);transition:transform 0.2s;flex-shrink:0;}
+.subject-item.open .subj-arrow{transform:rotate(90deg);}
+.chapter-list{display:none;padding:3px 0 6px 0;background:var(--bg2);}
+.subject-item.open .chapter-list{display:block;}
+.ch-all-item{display:flex;align-items:center;gap:8px;padding:8px 14px 8px 44px;cursor:pointer;transition:background 0.15s;border-left:2px solid transparent;}
+.ch-all-item:hover{background:rgba(255,255,255,0.03);}
+.ch-all-item.active{background:var(--gold-dim);border-left-color:var(--gold);}
+.ch-all-label{font-size:0.72rem;font-weight:600;color:var(--text2);flex:1;}
+.ch-all-item.active .ch-all-label{color:var(--gold);}
+.ch-all-count{font-size:0.62rem;font-weight:600;background:var(--surface3);color:var(--text3);padding:1px 7px;border-radius:8px;}
+.ch-all-item.active .ch-all-count{background:var(--gold-dim);color:var(--gold);}
+
+/* CHAPTER CARD GRID */
+.chapter-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding:8px 12px;background:transparent;}
+.ch-all-item{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;transition:all 0.15s;background:var(--surface2);border:1.5px solid rgba(201,168,76,0.3);border-radius:10px;margin-bottom:6px;grid-column:1/-1;}
+.ch-all-item:hover{background:var(--surface3);border-color:rgba(201,168,76,0.5);}
+.ch-all-label{flex:1;font-size:0.72rem;font-weight:600;color:var(--text2);}
+.ch-all-item:hover .ch-all-label{color:var(--gold);}
+.ch-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px 10px;cursor:pointer;transition:all 0.18s;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;text-align:center;}
+.ch-item:hover{background:var(--surface3);border-color:rgba(201,168,76,0.35);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.3);}
+.ch-item.active{background:var(--blue-dim);border-color:var(--blue);box-shadow:0 4px 12px rgba(59,130,246,0.2);}
+.ch-item-label{font-size:0.65rem;color:var(--text3);line-height:1.2;font-weight:500;}
+.ch-item.active .ch-item-label{color:var(--text);font-weight:600;}
+.ch-item-badge{font-size:0.58rem;font-weight:600;background:var(--surface3);color:var(--text3);padding:2px 6px;border-radius:6px;}
+.ch-item.active .ch-item-badge{background:var(--blue-dim);color:var(--blue);}
+.ch-checkbox{cursor:pointer;}
+.sidebar-nav{padding:8px 12px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:4px;}
+.nav-btn{display:flex;align-items:center;gap:8px;padding:7px 11px;border-radius:7px;background:transparent;border:1px solid var(--border);color:var(--text3);font-size:0.72rem;cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;width:100%;}
+.nav-btn:hover{border-color:var(--border2);color:var(--text2);background:var(--surface2);}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:0.6rem;padding:1px 6px;border-radius:8px;font-weight:700;}
+
+/* SETUP MAIN */
+.setup-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:28px 28px;position:relative;z-index:2;gap:18px;overflow-y:auto;}
+.welcome-card{width:100%;max-width:740px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px 36px;box-shadow:0 20px 60px rgba(0,0,0,0.5);position:relative;overflow:hidden;}
+.welcome-card::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(201,168,76,0.06) 0%,transparent 60%);}
+.wc-eyebrow{font-size:0.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:7px;display:block;}
+.wc-title{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:700;color:var(--text);letter-spacing:0.3px;line-height:1.2;}
+.wc-tagline{font-size:0.75rem;color:var(--text3);margin-top:5px;}
+.home-link{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:0.75rem;color:var(--text3);background:var(--surface2);border:1px solid var(--border);padding:5px 12px;border-radius:6px;text-decoration:none;transition:all 0.15s;}
+.home-link:hover{border-color:var(--gold-dim);color:var(--gold);}
+.dashboard-card{width:100%;max-width:740px;background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.3);}
+.dashboard-header{padding:12px 20px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.dashboard-header h3{font-family:'Cinzel',serif;font-size:0.85rem;color:var(--text);font-weight:600;}
+.dashboard-meta{font-size:0.65rem;color:var(--text3);}
+.dashboard-stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border);}
+.ds-cell{padding:13px;text-align:center;border-right:1px solid var(--border);} .ds-cell:last-child{border-right:none;}
+.ds-val{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:600;}
+.ds-lbl{font-size:0.58rem;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:0.8px;}
+.quiz-config-card{width:100%;max-width:740px;background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.qcc-header{padding:13px 20px;background:var(--surface2);border-bottom:1px solid var(--border);}
+.qcc-label{font-size:0.6rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:600;margin-bottom:4px;}
+.qcc-name{font-size:0.95rem;font-weight:600;color:var(--text);}
+.qcc-sub{font-size:0.7rem;color:var(--text3);margin-top:2px;}
+.qcc-body{padding:18px 20px;display:flex;flex-direction:column;gap:14px;}
+.config-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.config-label{font-size:0.7rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:1px;min-width:80px;}
+.config-input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:6px 12px;font-size:0.82rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;}
+.config-input:focus{border-color:var(--gold);}
+.toggle-wrap{display:flex;align-items:center;gap:8px;}
+.toggle-lbl{font-size:0.75rem;color:var(--text2);}
+.toggle{position:relative;display:inline-block;width:36px;height:20px;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--surface3);border-radius:20px;border:1px solid var(--border2);transition:0.2s;}
+.toggle-slider::before{content:'';position:absolute;height:14px;width:14px;left:2px;bottom:2px;background:var(--text3);border-radius:50%;transition:0.2s;}
+.toggle input:checked + .toggle-slider{background:var(--gold-dim);border-color:var(--gold);}
+.toggle input:checked + .toggle-slider::before{transform:translateX(16px);background:var(--gold);}
+.start-btn{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0a0e14;font-family:'Cinzel',serif;font-size:0.9rem;font-weight:700;border:none;border-radius:10px;padding:12px 28px;cursor:pointer;letter-spacing:0.5px;transition:all 0.2s;box-shadow:0 4px 20px rgba(201,168,76,0.3);}
+.start-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(201,168,76,0.4);}
+.loading-panel{width:100%;max-width:740px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:40px;text-align:center;}
+.loading-spinner{width:36px;height:36px;border:3px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-size:0.8rem;color:var(--text3);}
+
+/* QUIZ SCREEN */
+.quiz-topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:50px;display:flex;align-items:center;gap:12px;flex-shrink:0;position:relative;z-index:5;}
+.topbar-breadcrumb{font-size:0.72rem;color:var(--text3);flex:1;}
+.topbar-breadcrumb span{color:var(--gold);}
+.topbar-timer{font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:var(--text2);background:var(--surface2);border:1px solid var(--border);padding:4px 12px;border-radius:6px;}
+.topbar-timer.urgent{color:var(--red);border-color:var(--red);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
+.topbar-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text3);font-size:0.7rem;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.topbar-btn:hover{border-color:var(--border2);color:var(--text2);}
+.topbar-progress{height:3px;background:var(--border);position:absolute;bottom:0;left:0;right:0;}
+.topbar-progress-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width 0.3s ease;}
+.quiz-body{flex:1;display:flex;overflow:hidden;}
+.question-area{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:0;}
+.q-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text3);background:var(--surface2);border:1px solid var(--border);padding:3px 10px;border-radius:5px;flex-shrink:0;}
+.q-exam-tag{font-size:0.6rem;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,168,76,0.3);padding:3px 8px;border-radius:4px;flex-shrink:0;}
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:14px;}
+.q-text{font-size:0.92rem;line-height:1.7;color:var(--text);font-weight:400;}
+.options-grid{display:flex;flex-direction:column;gap:9px;margin-bottom:16px;}
+.opt-btn{display:flex;align-items:flex-start;gap:0;padding:13px 18px;background:var(--opt-bg);border:1.5px solid transparent;border-radius:10px;cursor:pointer;transition:background 0.15s,border-color 0.15s,transform 0.1s;text-align:left;width:100%;font-family:'DM Sans',sans-serif;}
+.opt-btn:hover{background:var(--opt-hover);border-color:var(--border2);transform:translateX(3px);}
+.opt-btn.selected{background:var(--opt-selected-bg);border-color:var(--opt-selected-border);transform:translateX(3px);}
+.opt-btn.correct{background:var(--green-dim);border-color:var(--green);}
+.opt-btn.wrong{background:var(--red-dim);border-color:var(--red);}
+.opt-btn.reveal-correct{background:var(--green-dim);border-color:var(--green);}
+.opt-text{font-size:0.84rem;color:var(--text);line-height:1.5;}
+.opt-btn.selected .opt-text{color:var(--blue);font-weight:600;}
+.opt-btn.correct .opt-text{color:var(--green);font-weight:600;}
+.opt-btn.wrong .opt-text{color:var(--red);}
+.opt-btn.reveal-correct .opt-text{color:var(--green);font-weight:600;}
+.explanation{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;display:none;}
+.explanation.show{display:block;}
+.exp-header{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;background:var(--surface2);border-bottom:1px solid var(--border);}
+.exp-title{font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text3);}
+.exp-correct-ans{font-size:0.75rem;color:var(--green);font-weight:600;}
+.exp-body{padding:16px 18px;font-size:0.82rem;line-height:1.7;color:var(--text2);}
+.quiz-bottombar{background:var(--surface);border-top:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap;}
+.nav-action-btn{padding:8px 16px;border-radius:8px;font-size:0.78rem;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.btn-prev{background:var(--surface2);color:var(--text2);border:1px solid var(--border);}
+.btn-prev:hover{border-color:var(--border2);color:var(--text);}
+.btn-next{background:var(--gold);color:#0a0e14;}
+.btn-next:hover{background:var(--gold2);}
+.btn-submit-all{background:var(--green);color:#fff;}
+.btn-submit-all:hover{opacity:0.9;}
+.btn-mark{background:var(--surface2);color:var(--purple);border:1px solid var(--border);} .btn-mark:hover{border-color:var(--purple);}
+.btn-clear{background:var(--surface2);color:var(--text3);border:1px solid var(--border);font-size:0.72rem;} .btn-clear:hover{border-color:var(--border2);}
+.btn-explain{background:var(--surface2);color:var(--orange);border:1px solid var(--border);} .btn-explain:hover{border-color:var(--orange);}
+.spacer{flex:1;}
+.q-stats{font-size:0.68rem;color:var(--text3);display:flex;gap:10px;}
+.q-stat-item span{font-weight:700;}
+.stat-ans{color:var(--green);} .stat-skip{color:var(--text3);} .stat-marked{color:var(--purple);}
+.palette-panel{width:190px;background:var(--surface);border-left:1px solid var(--border);padding:12px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;flex-shrink:0;}
+.palette-title{font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text3);}
+.palette-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;}
+.pal-btn{aspect-ratio:1;border-radius:6px;font-size:0.7rem;font-family:'JetBrains Mono',monospace;font-weight:600;border:1px solid var(--border);background:var(--surface2);color:var(--text3);cursor:pointer;transition:all 0.12s;display:flex;align-items:center;justify-content:center;}
+.pal-btn:hover{border-color:var(--border2);color:var(--text2);}
+.pal-btn.current{border-color:var(--gold);color:var(--gold);background:var(--gold-dim);}
+.pal-btn.answered{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+.pal-btn.marked{background:var(--purple-dim);border-color:var(--purple);color:var(--purple);}
+.pal-btn.answered-marked{background:linear-gradient(135deg,var(--green-dim),var(--purple-dim));border-color:var(--purple);color:var(--purple);}
+.pal-btn.visited{border-color:var(--border2);color:var(--text2);}
+.palette-legend{display:flex;flex-direction:column;gap:5px;}
+.pal-leg{display:flex;align-items:center;gap:7px;font-size:0.64rem;color:var(--text3);}
+.pal-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+.pal-dot.g{background:var(--green);} .pal-dot.r{background:var(--surface3);border:1px solid var(--border2);}
+.pal-dot.p{background:var(--purple);} .pal-dot.gold{background:var(--gold);}
+
+/* RESULT SCREEN */
+.result-wrap{width:100%;max-width:800px;display:flex;flex-direction:column;gap:18px;}
+.result-header{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px 32px;text-align:center;position:relative;overflow:hidden;}
+.result-header::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(201,168,76,0.06) 0%,transparent 60%);}
+.res-eyebrow{font-size:0.6rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;display:block;}
+.res-score{font-family:'JetBrains Mono',monospace;font-size:3.2rem;font-weight:700;line-height:1;}
+.res-grade{font-size:0.72rem;color:var(--text3);margin-top:6px;}
+.res-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--border);margin-top:22px;}
+.res-stat{padding:14px;text-align:center;border-right:1px solid var(--border);} .res-stat:last-child{border-right:none;}
+.res-stat-val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;}
+.res-stat-lbl{font-size:0.6rem;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:0.8px;}
+.result-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.res-btn{padding:10px 20px;border-radius:9px;font-size:0.8rem;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.res-btn-primary{background:var(--gold);color:#0a0e14;}
+.res-btn-secondary{background:var(--surface);border:1px solid var(--border);color:var(--text2);}
+.res-btn-secondary:hover{border-color:var(--border2);color:var(--text);}
+.res-btn-wrong{background:var(--red-dim);border:1px solid var(--red);color:var(--red);}
+.review-list{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.review-header{padding:13px 20px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.review-header h3{font-family:'Cinzel',serif;font-size:0.85rem;color:var(--text);}
+.review-filter{display:flex;gap:6px;}
+.rflt-btn{font-size:0.68rem;padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.rflt-btn.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
+.review-item{padding:16px 20px;border-bottom:1px solid var(--border);display:none;}
+.review-item.show{display:block;}
+.rev-meta{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.rev-num{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text3);}
+.rev-exam{font-size:0.58rem;background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,168,76,0.3);padding:2px 6px;border-radius:3px;font-weight:700;}
+.rev-correct-badge{font-size:0.62rem;padding:2px 8px;border-radius:4px;font-weight:700;}
+.rev-correct-badge.correct{background:var(--green-dim);color:var(--green);}
+.rev-correct-badge.wrong{background:var(--red-dim);color:var(--red);}
+.rev-correct-badge.skipped{background:var(--surface3);color:var(--text3);}
+.rev-q{font-size:0.83rem;color:var(--text);line-height:1.6;margin-bottom:10px;}
+.rev-options{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;}
+.rev-opt{font-size:0.78rem;padding:8px 14px;border-radius:8px;border:1px solid var(--border);color:var(--text2);}
+.rev-opt.correct-ans{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+.rev-opt.user-wrong{background:var(--red-dim);border-color:var(--red);color:var(--red);}
+.rev-exp{font-size:0.76rem;color:var(--text3);line-height:1.6;padding:10px 14px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--gold);}
+
+/* BANK SCREENS */
+.bank-screen-wrap{width:100%;max-width:760px;display:flex;flex-direction:column;gap:16px;}
+.bank-header-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.bank-title{font-family:'Cinzel',serif;font-size:1.1rem;color:var(--text);}
+.bank-count{font-size:0.72rem;color:var(--text3);margin-left:auto;}
+.bank-list{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.bank-item{padding:14px 18px;border-bottom:1px solid var(--border);}
+.bank-item:last-child{border-bottom:none;}
+.bank-item-top{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+.bank-tag{font-size:0.6rem;padding:2px 7px;border-radius:4px;font-weight:700;border:1px solid;}
+.bank-tag.mistake{background:var(--red-dim);color:var(--red);border-color:var(--red);}
+.bank-tag.bookmark{background:var(--cyan-dim);color:var(--cyan);border-color:var(--cyan);}
+.bank-tag.skip{background:var(--purple-dim);color:var(--purple);border-color:var(--purple);}
+.bank-tag.archive{background:var(--surface3);color:var(--text3);border-color:var(--border2);}
+.bank-times{font-size:0.6rem;color:var(--text3);}
+.bank-btn{font-size:0.63rem;background:transparent;border:1px solid var(--border);color:var(--text3);padding:2px 8px;border-radius:4px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.bank-btn:hover{border-color:var(--border2);color:var(--text2);}
+.bank-q{font-size:0.82rem;color:var(--text);line-height:1.6;}
+.bank-ans{font-size:0.72rem;color:var(--green);margin-top:5px;}
+.cc-dots{display:flex;gap:4px;align-items:center;margin-top:6px;}
+.cc-dot{width:10px;height:10px;border-radius:50%;background:var(--border2);transition:background 0.2s;}
+.cc-dot.filled{background:var(--green);}
+.cc-label{font-size:0.6rem;color:var(--text3);margin-left:4px;}
+.from-badge{font-size:0.58rem;padding:1px 6px;border-radius:3px;font-weight:700;}
+.from-badge.mistake{background:var(--red-dim);color:var(--red);}
+.from-badge.skip{background:var(--purple-dim);color:var(--purple);}
+.from-badge.bookmark{background:var(--cyan-dim);color:var(--cyan);}
+</style>
 </head>
-<body class="quiz-page">
+<body>
+<div class="bg-grid"></div>
+<div class="bg-radial"></div>
 
-  <div class="bg-grid"></div>
-
-  <!-- Quiz Header -->
-  <header class="quiz-header">
-    <a href="index.html" class="btn-home">← Home</a>
-    <div class="quiz-header-center">
-      <span class="quiz-subject-label" id="quizSubjectLabel">Loading…</span>
-      <span class="quiz-chapter-label" id="quizChapterLabel"></span>
+<!-- SETUP SCREEN -->
+<div class="screen active" id="setup-screen" style="flex-direction:row;">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-tag">BPSC Pre PYQ</span>
+      <h2>Priyadarshani</h2>
+      <div class="sidebar-subtitle">9 Subjects · Select to Begin</div>
     </div>
-    <div class="quiz-header-right">
-      <span class="quiz-score-badge" id="scoreBadge">0 / 0</span>
+    <div class="subject-nav" id="subject-nav"></div>
+    <div class="sidebar-nav">
+      <button class="nav-btn" onclick="showMistakeScreen()">🔴 Mistake Bank <span class="nav-badge" id="mistake-badge">0</span></button>
+      <button class="nav-btn" onclick="showBookmarkScreen()" style="color:var(--cyan);">🔖 Bookmark Bank <span class="nav-badge" style="background:var(--cyan);" id="bookmark-badge">0</span></button>
+      <button class="nav-btn" onclick="showSkipScreen()" style="color:var(--purple);">⏭ Skip Bank <span class="nav-badge" style="background:var(--purple);" id="skip-badge">0</span></button>
+      <button class="nav-btn" onclick="showArchiveScreen()" style="color:var(--text3);">🗃 Archive <span class="nav-badge" style="background:var(--surface3);color:var(--text3);border:1px solid var(--border2);" id="archive-badge">0</span></button>
     </div>
-  </header>
-
-  <!-- Progress bar -->
-  <div class="progress-rail">
-    <div class="progress-fill" id="progressFill" style="width:0%"></div>
   </div>
-
-  <!-- Quiz body -->
-  <main class="quiz-main" id="quizMain">
-
-    <!-- Loading state -->
-    <div class="quiz-loading" id="quizLoading">
-      <div class="loader-ring"></div>
-      <p>Loading questions…</p>
+  <div class="setup-main" id="setup-main">
+    <div class="welcome-card" id="welcome-card">
+      <span class="wc-eyebrow">BPSC Pre Previous Year Questions</span>
+      <h1 class="wc-title">Priyadarshani PYQ</h1>
+      <p class="wc-tagline">Select a subject from the sidebar to begin your practice</p>
+      <a href="index.html" class="home-link">← Back to Home</a>
     </div>
-
-    <!-- Question card -->
-    <div class="question-wrap" id="questionWrap" hidden>
-      <div class="question-meta" id="questionMeta"></div>
-
-      <div class="question-counter">
-        <span id="qCurrent">1</span> / <span id="qTotal">—</span>
+    <div class="dashboard-card" id="dash-card">
+      <div class="dashboard-header">
+        <h3>Performance Dashboard</h3>
+        <span class="dashboard-meta" id="dash-meta">No sessions yet</span>
       </div>
-
-      <div class="question-card" id="questionCard">
-        <p class="question-text" id="questionText"></p>
-
-        <div class="options-grid" id="optionsGrid"></div>
-
-        <!-- Explanation (revealed after answer) -->
-        <div class="explanation-box" id="explanationBox" hidden>
-          <div class="explanation-header">
-            <span class="expl-icon">💡</span>
-            <span>Explanation</span>
-          </div>
-          <p id="explanationText"></p>
-        </div>
-      </div>
-
-      <!-- Navigation -->
-      <div class="quiz-nav">
-        <button class="btn-nav btn-prev" id="btnPrev" disabled>← Prev</button>
-        <button class="btn-nav btn-skip" id="btnSkip">Skip</button>
-        <button class="btn-nav btn-next" id="btnNext" disabled>Next →</button>
+      <div class="dashboard-stats">
+        <div class="ds-cell"><div class="ds-val" id="dash-accuracy" style="color:var(--gold)">—</div><div class="ds-lbl">Accuracy</div></div>
+        <div class="ds-cell"><div class="ds-val" id="dash-attempted" style="color:var(--blue)">0</div><div class="ds-lbl">Attempted</div></div>
+        <div class="ds-cell"><div class="ds-val" id="dash-sessions" style="color:var(--green)">0</div><div class="ds-lbl">Sessions</div></div>
+        <div class="ds-cell"><div class="ds-val" id="dash-mistakes" style="color:var(--red)">0</div><div class="ds-lbl">Mistakes</div></div>
       </div>
     </div>
+    <div id="subject-panel"></div>
+  </div>
+</div>
 
-    <!-- Results screen -->
-    <div class="results-screen" id="resultsScreen" hidden>
-      <div class="results-card">
-        <div class="result-emoji" id="resultEmoji">🎉</div>
-        <h2 class="result-title">Quiz Complete!</h2>
-        <div class="result-score-ring">
-          <svg viewBox="0 0 120 120" class="ring-svg">
-            <circle cx="60" cy="60" r="52" class="ring-bg" />
-            <circle cx="60" cy="60" r="52" class="ring-progress" id="ringProgress" />
-          </svg>
-          <div class="ring-text">
-            <span class="ring-percent" id="ringPercent">—</span>
-            <span class="ring-label">Score</span>
-          </div>
-        </div>
-        <div class="result-stats">
-          <div class="rs-item correct"><span id="rsCorrect">—</span><label>Correct</label></div>
-          <div class="rs-item wrong"><span id="rsWrong">—</span><label>Wrong</label></div>
-          <div class="rs-item skipped"><span id="rsSkipped">—</span><label>Skipped</label></div>
-        </div>
-        <div class="result-actions">
-          <button class="btn-result" id="btnRetry">🔁 Retry</button>
-          <button class="btn-result btn-result-outline" id="btnReview">📋 Review</button>
-          <a href="index.html" class="btn-result btn-result-ghost">🏠 Home</a>
-        </div>
+<!-- QUIZ SCREEN -->
+<div class="screen" id="quiz-screen" style="flex-direction:column;">
+  <div class="quiz-topbar">
+    <div class="topbar-breadcrumb" id="topbar-bc">Quiz <span id="topbar-ch"></span></div>
+    <div class="topbar-timer" id="timer-display">∞</div>
+    <button class="topbar-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle theme" style="font-size:0.8rem;padding:5px 10px;">☀️</button>
+    <button class="topbar-btn" id="pause-btn" onclick="togglePause()">Pause</button>
+    <button class="topbar-btn" onclick="confirmHome()">✕ Exit</button>
+    <div class="topbar-progress"><div class="topbar-progress-bar" id="progress-bar"></div></div>
+  </div>
+  <div class="quiz-body">
+    <div class="question-area" id="question-area"></div>
+    <div class="palette-panel">
+      <div class="palette-title">Question Palette</div>
+      <div class="palette-grid" id="palette-grid"></div>
+      <div class="palette-legend">
+        <div class="pal-leg"><div class="pal-dot g"></div> Answered</div>
+        <div class="pal-leg"><div class="pal-dot r"></div> Not visited</div>
+        <div class="pal-leg"><div class="pal-dot p"></div> Marked</div>
+        <div class="pal-leg"><div class="pal-dot gold"></div> Current</div>
       </div>
     </div>
-
-    <!-- Review screen -->
-    <div class="review-screen" id="reviewScreen" hidden>
-      <button class="btn-back-review" id="btnBackResult">← Back to Results</button>
-      <h2 class="review-title">Answer Review</h2>
-      <div class="review-list" id="reviewList"></div>
+  </div>
+  <div class="quiz-bottombar">
+    <button class="nav-action-btn btn-prev" onclick="goToPrev()">← Prev</button>
+    <button class="nav-action-btn btn-mark" onclick="markForReview()">⚑ Mark</button>
+    <button class="nav-action-btn" id="btn-bookmark" onclick="toggleBookmark()" style="background:var(--surface2);color:var(--cyan);border:1px solid var(--border);font-size:0.78rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;padding:8px 16px;border-radius:8px;transition:all 0.15s;">🔖 Bookmark</button>
+    <button class="nav-action-btn btn-clear" onclick="clearResponse()">Clear</button>
+    <button class="nav-action-btn btn-explain" onclick="toggleExplanation()">Explain</button>
+    <span style="font-size:0.62rem;color:var(--text3);background:var(--surface2);border:1px solid var(--border);padding:3px 8px;border-radius:5px;letter-spacing:0.5px;">⎵ next opt · ↵ next · B bookmark · P prev</span>
+    <div class="spacer"></div>
+    <div class="q-stats">
+      <span class="q-stat-item">Ans: <span class="stat-ans" id="stat-ans">0</span></span>
+      <span class="q-stat-item">Skip: <span class="stat-skip" id="stat-skip">0</span></span>
+      <span class="q-stat-item">Mark: <span class="stat-marked" id="stat-mark">0</span></span>
     </div>
+    <button class="nav-action-btn btn-next" id="btn-next" onclick="saveAndNext()">Next →</button>
+    <button class="nav-action-btn btn-submit-all" id="btn-submit" onclick="submitQuiz()" style="display:none;">Submit</button>
+  </div>
+</div>
 
-  </main>
+<!-- RESULT SCREEN -->
+<div class="screen" id="result-screen">
+  <div class="result-wrap">
+    <div class="result-header">
+      <span class="res-eyebrow" id="res-eyebrow">Quiz Complete</span>
+      <div class="res-score" id="res-score">—</div>
+      <div class="res-grade" id="res-grade"></div>
+      <div class="res-stats">
+        <div class="res-stat"><div class="res-stat-val" id="rs-correct" style="color:var(--green)">0</div><div class="res-stat-lbl">Correct</div></div>
+        <div class="res-stat"><div class="res-stat-val" id="rs-wrong" style="color:var(--red)">0</div><div class="res-stat-lbl">Wrong</div></div>
+        <div class="res-stat"><div class="res-stat-val" id="rs-skip" style="color:var(--text3)">0</div><div class="res-stat-lbl">Skipped</div></div>
+        <div class="res-stat"><div class="res-stat-val" id="rs-time" style="color:var(--blue)">—</div><div class="res-stat-lbl">Time</div></div>
+      </div>
+    </div>
+    <div class="result-actions" id="result-actions">
+      <button class="res-btn res-btn-primary" onclick="backToSetup()">← Back to Home</button>
+      <button class="res-btn res-btn-wrong" id="btn-retry-wrong" onclick="retryWrong()">Retry Wrong</button>
+    </div>
+    <div class="review-list" id="review-list">
+      <div class="review-header">
+        <h3>Question Review</h3>
+        <div class="review-filter">
+          <button class="rflt-btn active" data-filter="all" onclick="filterReview('all',this)">All</button>
+          <button class="rflt-btn" data-filter="correct" onclick="filterReview('correct',this)">✓ Correct</button>
+          <button class="rflt-btn" data-filter="wrong" onclick="filterReview('wrong',this)">✗ Wrong</button>
+          <button class="rflt-btn" data-filter="skipped" onclick="filterReview('skipped',this)">— Skip</button>
+        </div>
+      </div>
+      <div id="review-body"></div>
+    </div>
+  </div>
+</div>
 
-  <script src="js/quiz.js"></script>
+<!-- MISTAKE SCREEN -->
+<div class="screen" id="mistake-screen" style="flex-direction:column;align-items:center;padding:40px 24px;min-height:100vh;">
+  <div style="width:100%;max-width:760px;display:flex;flex-direction:column;gap:16px;">
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+      <button onclick="backToSetup()" style="background:var(--surface);border:1px solid var(--border);color:var(--text2);padding:7px 14px;border-radius:8px;font-size:0.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;">← Back</button>
+      <h2 style="font-family:'Cinzel',serif;font-size:1.1rem;color:var(--text);">🔴 Mistake Bank</h2>
+      <span id="mistake-count-lbl" style="font-size:0.72rem;color:var(--text3);margin-left:auto;"></span>
+      <button onclick="clearAllMistakes()" style="background:var(--red-dim);border:1px solid var(--red);color:var(--red);padding:6px 12px;border-radius:7px;font-size:0.72rem;cursor:pointer;font-family:'DM Sans',sans-serif;">Archive All</button>
+      <button onclick="practiceFromMistakes()" style="background:var(--gold);color:#0a0e14;border:none;padding:7px 14px;border-radius:8px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Practice →</button>
+    </div>
+    <div style="font-size:0.7rem;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;">🟢 Auto-archived after <strong style="color:var(--green);">5 correct answers</strong>. Dots show progress.</div>
+    <div id="mistake-list" class="bank-list"></div>
+  </div>
+</div>
+
+<!-- BOOKMARK SCREEN -->
+<div class="screen" id="bookmark-screen" style="flex-direction:column;align-items:center;padding:40px 24px;min-height:100vh;">
+  <div class="bank-screen-wrap">
+    <div class="bank-header-row">
+      <button onclick="backToSetup()" style="background:var(--surface);border:1px solid var(--border);color:var(--text2);padding:7px 14px;border-radius:8px;font-size:0.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;">← Back</button>
+      <h2 class="bank-title">🔖 Bookmark Bank</h2>
+      <span id="bookmark-count-lbl" class="bank-count"></span>
+      <button onclick="clearAllBookmarks()" style="background:var(--cyan-dim);border:1px solid var(--cyan);color:var(--cyan);padding:6px 12px;border-radius:7px;font-size:0.72rem;cursor:pointer;font-family:'DM Sans',sans-serif;">Archive All</button>
+      <button onclick="practiceFromBookmarks()" style="background:var(--gold);color:#0a0e14;border:none;padding:7px 14px;border-radius:8px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Practice →</button>
+    </div>
+    <div id="bookmark-list" class="bank-list"></div>
+  </div>
+</div>
+
+<!-- SKIP SCREEN -->
+<div class="screen" id="skip-screen" style="flex-direction:column;align-items:center;padding:40px 24px;min-height:100vh;">
+  <div class="bank-screen-wrap">
+    <div class="bank-header-row">
+      <button onclick="backToSetup()" style="background:var(--surface);border:1px solid var(--border);color:var(--text2);padding:7px 14px;border-radius:8px;font-size:0.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;">← Back</button>
+      <h2 class="bank-title">⏭ Skip Bank</h2>
+      <span id="skip-count-lbl" class="bank-count"></span>
+      <button onclick="clearAllSkips()" style="background:var(--purple-dim);border:1px solid var(--purple);color:var(--purple);padding:6px 12px;border-radius:7px;font-size:0.72rem;cursor:pointer;font-family:'DM Sans',sans-serif;">Archive All</button>
+      <button onclick="practiceFromSkips()" style="background:var(--gold);color:#0a0e14;border:none;padding:7px 14px;border-radius:8px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Practice →</button>
+    </div>
+    <div style="font-size:0.7rem;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;">🟢 Auto-archived after <strong style="color:var(--green);">5 correct answers</strong>.</div>
+    <div id="skip-list" class="bank-list"></div>
+  </div>
+</div>
+
+<!-- ARCHIVE SCREEN -->
+<div class="screen" id="archive-screen" style="flex-direction:column;align-items:center;padding:40px 24px;min-height:100vh;">
+  <div class="bank-screen-wrap">
+    <div class="bank-header-row">
+      <button onclick="backToSetup()" style="background:var(--surface);border:1px solid var(--border);color:var(--text2);padding:7px 14px;border-radius:8px;font-size:0.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;">← Back</button>
+      <h2 class="bank-title">🗃 Archive</h2>
+      <span id="archive-count-lbl" class="bank-count"></span>
+      <button onclick="clearAllArchive()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text3);padding:6px 12px;border-radius:7px;font-size:0.72rem;cursor:pointer;font-family:'DM Sans',sans-serif;">Clear All</button>
+    </div>
+    <div style="font-size:0.7rem;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;">Questions mastered (5× correct) or manually cleared from banks.</div>
+    <div id="archive-list" class="bank-list"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+// SUBJECTS CONFIG — matches chapters.json keys
+// ══════════════════════════════════════════════════
+const SUBJECTS_CONFIG = [
+  { id:'modern_history',  name:'Modern History',   icon:'📜', file:'data/modern_history.json'  },
+  { id:'ancient_history', name:'Ancient History',  icon:'🏛️', file:'data/ancient_history.json' },
+  { id:'polity',          name:'Indian Polity',    icon:'⚖️', file:'data/polity.json'           },
+  { id:'economy',         name:'Indian Economy',   icon:'💹', file:'data/economy.json'          },
+  { id:'world_geography', name:'World Geography',  icon:'🌍', file:'data/world_geography.json'  },
+  { id:'bihar_special',   name:'Bihar Special',    icon:'🗺️', file:'data/bihar_special.json'    },
+  { id:'math',            name:'Mathematics',      icon:'🔢', file:'data/math.json'             },
+  { id:'physics',         name:'Physics',          icon:'⚛️', file:'data/physics.json'          },
+  { id:'biology',         name:'Biology',          icon:'🧬', file:'data/biology.json'          },
+];
+
+// ══════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════
+let currentSubjectId  = null;
+let currentChapter    = null; // null | 'all' | chapter_name string
+let selectedChapters  = new Set(); // For multi-chapter selection
+let allQuestions      = [];
+let chapterMap        = {};   // { chapterName: [questions] }
+let quiz = [], state = {}, quizMeta = {};
+let timerInterval = null, paused = false, totalSecs = 0;
+let lastResults = [];
+let shuffledOptionOrders = [];
+
+// ══════════════════════════════════════════════════
+// LOCAL STORAGE HELPERS
+// ══════════════════════════════════════════════════
+const LS = {
+  get:(k,def={})=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(def));}catch(e){return def;}},
+  set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+};
+const getHistory   = ()=>LS.get('priya_history',[]);
+const saveHistory  = h =>LS.set('priya_history',h);
+const getMistakes  = ()=>LS.get('priya_mistakes',{});
+const saveMistakes = m =>LS.set('priya_mistakes',m);
+const getBookmarks = ()=>LS.get('priya_bookmarks',{});
+const saveBookmarks= b =>LS.set('priya_bookmarks',b);
+const getSkips     = ()=>LS.get('priya_skips',{});
+const saveSkips    = s =>LS.set('priya_skips',s);
+const getArchive   = ()=>LS.get('priya_archive',{});
+const saveArchive  = a =>LS.set('priya_archive',a);
+
+const MASTERY = 5;
+function archiveQuestion(q, fromBank) {
+  const arc = getArchive(); arc[q.uid]={q,fromBank,archivedAt:new Date().toISOString()}; saveArchive(arc); updateAllBadges();
+}
+function addToMistakes(wrongResults) {
+  const bank=getMistakes(); wrongResults.forEach(r=>{const p=bank[r.q.uid]||{};bank[r.q.uid]={q:r.q,userKey:r.userKey,addedAt:p.addedAt||new Date().toISOString(),times:(p.times||0)+1,correctCount:p.correctCount||0};}); saveMistakes(bank); updateAllBadges();
+}
+function addToBookmarks(q) { const b=getBookmarks(); if(b[q.uid])return; b[q.uid]={q,addedAt:new Date().toISOString()}; saveBookmarks(b); updateAllBadges(); }
+function removeFromBookmarks(uid,archive=true) { const b=getBookmarks(); if(archive&&b[uid])archiveQuestion(b[uid].q,'bookmark'); delete b[uid]; saveBookmarks(b); updateAllBadges(); }
+function addToSkips(qs) { const b=getSkips(); qs.forEach(q=>{const p=b[q.uid]||{};b[q.uid]={q,addedAt:p.addedAt||new Date().toISOString(),times:(p.times||0)+1,correctCount:p.correctCount||0};}); saveSkips(b); updateAllBadges(); }
+function processCorrectAnswers(correctResults) {
+  const mistakes=getMistakes(),skips=getSkips(); let mc=false,sc=false;
+  correctResults.forEach(r=>{
+    const uid=r.q.uid;
+    if(mistakes[uid]){mistakes[uid].correctCount=(mistakes[uid].correctCount||0)+1;if(mistakes[uid].correctCount>=MASTERY){archiveQuestion(r.q,'mistake');delete mistakes[uid];}mc=true;}
+    if(skips[uid]){skips[uid].correctCount=(skips[uid].correctCount||0)+1;if(skips[uid].correctCount>=MASTERY){archiveQuestion(r.q,'skip');delete skips[uid];}sc=true;}
+  });
+  if(mc)saveMistakes(mistakes); if(sc)saveSkips(skips);
+}
+function updateAllBadges() {
+  document.getElementById('mistake-badge').textContent  = Object.keys(getMistakes()).length;
+  document.getElementById('bookmark-badge').textContent = Object.keys(getBookmarks()).length;
+  document.getElementById('skip-badge').textContent     = Object.keys(getSkips()).length;
+  document.getElementById('archive-badge').textContent  = Object.keys(getArchive()).length;
+}
+
+// ══════════════════════════════════════════════════
+// SIDEBAR
+// ══════════════════════════════════════════════════
+function buildSubjectSidebar() {
+  const nav = document.getElementById('subject-nav'); nav.innerHTML='';
+  SUBJECTS_CONFIG.forEach(subj => {
+    const item = document.createElement('div'); item.className='subject-item'; item.id='subj-item-'+subj.id;
+    item.innerHTML=`
+      <div class="subj-header" id="subj-hdr-${subj.id}" onclick="toggleSubject('${subj.id}')">
+        <div class="subj-icon">${subj.icon}</div>
+        <div class="subj-info"><div class="subj-name">${subj.name}</div></div>
+        <span class="subj-arrow" id="subj-arrow-${subj.id}">▶</span>
+      </div>
+      <div class="chapter-list" id="ch-list-${subj.id}"></div>`;
+    nav.appendChild(item);
+  });
+  updateAllBadges();
+}
+
+function toggleSubject(subjId) {
+  const item=document.getElementById('subj-item-'+subjId);
+  const isOpen=item.classList.contains('open');
+  document.querySelectorAll('.subject-item.open').forEach(el=>{
+    el.classList.remove('open');
+    el.querySelector('.subj-header')?.classList.remove('active');
+    const a=el.querySelector('.subj-arrow'); if(a)a.style.transform='';
+  });
+  if(!isOpen){
+    item.classList.add('open');
+    document.getElementById('subj-hdr-'+subjId).classList.add('active');
+    const arrow=document.getElementById('subj-arrow-'+subjId); if(arrow)arrow.style.transform='rotate(90deg)';
+    loadSubjectData(subjId);
+    currentSubjectId=subjId; currentChapter=null; selectedChapters.clear();
+    showLoadingPanel(SUBJECTS_CONFIG.find(s=>s.id===subjId).name);
+  } else {
+    currentSubjectId=null; currentChapter=null; selectedChapters.clear();
+    showWelcomePanel();
+  }
+}
+
+async function loadSubjectData(subjId) {
+  const subj=SUBJECTS_CONFIG.find(s=>s.id===subjId);
+  try {
+    const resp=await fetch(subj.file);
+    if(!resp.ok)throw new Error('HTTP '+resp.status);
+    const data=await resp.json();
+    processData(data, subjId);
+    renderChapterSidebar(subjId);
+    renderSubjectPanel(subjId);
+  } catch(err) {
+    console.error(err);
+    document.getElementById('subject-panel').innerHTML=`<div style="padding:40px;text-align:center;color:var(--red);font-size:0.85rem;">⚠ Failed to load. Run from a local server or GitHub Pages.</div>`;
+  }
+}
+
+function processData(data, subjId) {
+  allQuestions=[]; chapterMap={};
+  let idx=0;
+  (data.chapters||[]).forEach(ch => {
+    const chName = ch.chapter_name||ch.name||'General';
+    chapterMap[chName]=[];
+    (ch.questions||[]).forEach(q => {
+      const internal = {
+        uid: `${subjId}_${idx++}`,
+        _subjectId: subjId,
+        chapter: chName,
+        exam: q.exam||'',
+        year: q.year||'',
+        question: q.q||q.question||'',
+        options: q.options||{},
+        correctKey: q.answer||q.correct_option||'A',
+        correctAnswer: q.options?.[q.answer||q.correct_option]||q.correct_answer||'',
+        explanation: q.explanation||''
+      };
+      allQuestions.push(internal);
+      chapterMap[chName].push(internal);
+    });
+  });
+}
+
+function renderChapterSidebar(subjId) {
+  const list=document.getElementById('ch-list-'+subjId); if(!list)return;
+  selectedChapters.clear();
+  let html=`<div class="ch-all-item" id="ch-all-item" onclick="toggleSelectAll()">
+    <input type="checkbox" class="ch-checkbox" id="select-all-checkbox" onchange="toggleSelectAll()">
+    <span class="ch-all-label">📚 Select All</span>
+    <span class="ch-all-count">${allQuestions.length}</span></div>`;
+  Object.entries(chapterMap).forEach(([name,qs])=>{
+    html+=`<div class="ch-item" data-chapter="${name}" onclick="toggleChapter('${encodeURIComponent(name)}')">
+      <input type="checkbox" class="ch-checkbox" data-chapter="${name}" onchange="toggleChapter('${encodeURIComponent(name)}')">
+      <span class="ch-item-label">${name}</span>
+      <span class="ch-item-badge">${qs.length}</span></div>`;
+  });
+  list.innerHTML=html;
+}
+
+function toggleSelectAll() {
+  const allCheckboxes = document.querySelectorAll('.ch-checkbox');
+  const selectAllCheckbox = document.getElementById('select-all-checkbox');
+  const shouldSelect = selectAllCheckbox?.checked || false;
+  selectedChapters.clear();
+  allCheckboxes.forEach(cb => {
+    cb.checked = shouldSelect;
+    if(shouldSelect) selectedChapters.add(decodeURIComponent(cb.dataset.chapter));
+  });
+  selectAllCheckbox.checked = shouldSelect;
+  updateSubjectPanel();
+}
+
+function toggleChapter(encoded) {
+  const name = decodeURIComponent(encoded);
+  const checkbox = document.querySelector(`[data-chapter="${name}"].ch-checkbox`);
+  if(checkbox?.checked) {
+    selectedChapters.add(name);
+  } else {
+    selectedChapters.delete(name);
+  }
+  const selectAllCheckbox = document.getElementById('select-all-checkbox');
+  const allCheckboxes = document.querySelectorAll('.ch-checkbox');
+  if(selectAllCheckbox) {
+    selectAllCheckbox.checked = allCheckboxes.length > 0 && Array.from(allCheckboxes).every(cb => cb.checked);
+  }
+  updateSubjectPanel();
+}
+
+function updateSubjectPanel() {
+  renderSubjectPanel(currentSubjectId);
+}
+
+function selectChapter(encoded) {
+  const chapter = encoded==='all'?'all':decodeURIComponent(encoded);
+  selectedChapters.clear();
+  if(chapter==='all') {
+    document.querySelectorAll('.ch-checkbox').forEach(cb => { cb.checked = true; selectedChapters.add(decodeURIComponent(cb.dataset.chapter)); });
+    document.getElementById('select-all-checkbox').checked = true;
+  } else {
+    selectedChapters.add(chapter);
+    document.querySelector(`[data-chapter="${chapter}"].ch-checkbox`).checked = true;
+  }
+  updateSubjectPanel();
+}
+
+// ══════════════════════════════════════════════════
+// SETUP PANEL
+// ══════════════════════════════════════════════════
+function showWelcomePanel() {
+  document.getElementById('welcome-card').style.display='';
+  document.getElementById('subject-panel').innerHTML='';
+  buildDashboard();
+}
+function showLoadingPanel(name) {
+  document.getElementById('welcome-card').style.display='none';
+  document.getElementById('subject-panel').innerHTML=`<div class="loading-panel"><div class="loading-spinner"></div><div class="loading-text">Loading ${name}…</div></div>`;
+}
+
+function renderSubjectPanel(subjId, chapter) {
+  const subj=SUBJECTS_CONFIG.find(s=>s.id===subjId);
+  document.getElementById('welcome-card').style.display='none';
+  if(selectedChapters.size===0){
+    document.getElementById('subject-panel').innerHTML=`<div class="quiz-config-card"><div class="qcc-header"><div class="qcc-label">Subject Selected</div><div class="qcc-name">${subj.name}</div><div class="qcc-sub">${allQuestions.length} questions · Select chapters from the sidebar</div></div></div>`;
+    return;
+  }
+  const pool=[...allQuestions].filter(q=>selectedChapters.has(q.chapter));
+  const chLabel=selectedChapters.size===Object.keys(chapterMap).length?'All Chapters':Array.from(selectedChapters).join(', ');
+  document.getElementById('subject-panel').innerHTML=`
+    <div class="quiz-config-card">
+      <div class="qcc-header">
+        <div class="qcc-label">${subj.name}</div>
+        <div class="qcc-name">${chLabel}</div>
+        <div class="qcc-sub">${pool.length} questions available</div>
+      </div>
+      <div class="qcc-body">
+        <div class="config-row" style="flex-wrap:wrap;gap:12px;">
+          <span style="font-size:0.7rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:1px;">Selected Chapters</span>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;width:100%;">${Array.from(selectedChapters).map(ch=>`<span style="font-size:0.68rem;background:var(--blue-dim);color:var(--blue);border:1px solid var(--blue);padding:4px 10px;border-radius:6px;">${ch}</span>`).join('')}</div>
+        </div>
+        <div class="config-row">
+          <span class="config-label">Questions</span>
+          <input type="number" class="config-input" id="num-questions" value="${pool.length}" min="1" max="${pool.length}" style="width:90px;">
+          <span style="font-size:0.72rem;color:var(--text3);">of ${pool.length}</span>
+          <button onclick="document.getElementById('num-questions').value=${pool.length}" style="font-size:0.68rem;background:var(--surface2);border:1px solid var(--border);color:var(--text3);padding:4px 9px;border-radius:5px;cursor:pointer;">Max</button>
+        </div>
+        <div class="config-row">
+          <span class="config-label">Timer</span>
+          <input type="number" class="config-input" id="timer-mins" value="0" min="0" max="180" style="width:70px;">
+          <span style="font-size:0.72rem;color:var(--text3);">mins (0 = no timer)</span>
+        </div>
+        <div class="config-row">
+          <label class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="toggle-shuffle"><span class="toggle-slider"></span></label>
+            <span class="toggle-lbl">Shuffle Questions</span>
+          </label>
+          <label class="toggle-wrap" style="margin-left:16px;">
+            <label class="toggle"><input type="checkbox" id="toggle-shuffle-opts"><span class="toggle-slider"></span></label>
+            <span class="toggle-lbl">Shuffle Options</span>
+          </label>
+        </div>
+        <div class="config-row">
+          <button class="start-btn" onclick="startQuiz()">Start Quiz →</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════════
+function buildDashboard() {
+  const h=getHistory(), mistakes=Object.keys(getMistakes()).length;
+  const totalAttempted=h.reduce((s,e)=>s+e.correct+e.wrong,0);
+  const totalCorrect=h.reduce((s,e)=>s+e.correct,0);
+  const acc=totalAttempted>0?Math.round(totalCorrect/totalAttempted*100):0;
+  document.getElementById('dash-accuracy').textContent=totalAttempted>0?acc+'%':'—';
+  document.getElementById('dash-attempted').textContent=totalAttempted;
+  document.getElementById('dash-sessions').textContent=h.length;
+  document.getElementById('dash-mistakes').textContent=mistakes;
+  document.getElementById('dash-meta').textContent=h.length?`Last: ${new Date(h[0].date).toLocaleDateString()}`:'No sessions yet';
+}
+
+// ══════════════════════════════════════════════════
+// QUIZ ENGINE
+// ══════════════════════════════════════════════════
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+
+function startQuiz(mode, customPool) {
+  let pool;
+  if(mode==='mistakes'||mode==='wrong'||mode==='skips'||mode==='bookmarks'){
+    pool=shuffle([...customPool]);
+  } else {
+    let base=[...allQuestions].filter(q=>selectedChapters.has(q.chapter));
+    if(document.getElementById('toggle-shuffle')?.checked) base=shuffle(base);
+    const n=Math.min(parseInt(document.getElementById('num-questions')?.value)||base.length,base.length);
+    pool=base.slice(0,n);
+  }
+  if(!pool.length){alert('No questions found!');return;}
+  quiz=pool;
+  const selectedList=Array.from(selectedChapters).join(', ');
+  quizMeta={mode,subjectId:currentSubjectId,chapter:selectedList,startTime:new Date()};
+  state={current:0,answers:new Array(quiz.length).fill(null),visited:new Array(quiz.length).fill(false),marked:new Array(quiz.length).fill(false)};
+  state.visited[0]=true;
+  const doShuffleOpts=document.getElementById('toggle-shuffle-opts')?.checked||false;
+  shuffledOptionOrders=quiz.map(q=>{const keys=Object.keys(q.options);return doShuffleOpts?shuffle([...keys]):keys;});
+  const mins=parseInt(document.getElementById('timer-mins')?.value||0);
+  totalSecs=mins*60;
+  const subj=SUBJECTS_CONFIG.find(s=>s.id===currentSubjectId);
+  const chLabel=quizMeta.chapter||'Practice';
+  document.getElementById('topbar-bc').innerHTML=`${subj?.name||'Quiz'} <span>· ${mode==='mistakes'?'Mistake Practice':mode==='wrong'?'Retry Wrong':mode==='skips'?'Skip Practice':mode==='bookmarks'?'Bookmark Practice':chLabel.substring(0,40)+(chLabel.length>40?'...':'')}</span>`;
+  showScreen('quiz-screen');
+  renderQuestion(); renderPalette(); updateStats();
+  clearInterval(timerInterval); paused=false;
+  document.getElementById('pause-btn').textContent='Pause';
+  document.getElementById('timer-display').classList.remove('urgent');
+  if(totalSecs>0)startTimer(); else document.getElementById('timer-display').textContent='∞';
+}
+
+function renderQuestion() {
+  const i=state.current, q=quiz[i];
+  const optionKeys=shuffledOptionOrders[i]||Object.keys(q.options);
+  const answered=state.answers[i], isMarked=state.marked[i];
+  const pct=((i+1)/quiz.length)*100;
+  document.getElementById('progress-bar').style.width=pct+'%';
+  const examLabel=[q.exam,q.year&&q.year!=='Unknown'&&q.year!==q.exam?q.year:''].filter(Boolean).join(' · ');
+  let optionsHtml=optionKeys.map(key=>{
+    const text=q.options[key]; if(!text)return '';
+    let cls='opt-btn'; if(answered===key)cls+=' selected';
+    return `<button class="${cls}" data-key="${key}" onclick="selectOption('${key}')"><span class="opt-text">${text}</span></button>`;
+  }).join('');
+  const isLast=(i===quiz.length-1);
+  const inlineBtn=isLast
+    ?`<div style="display:flex;justify-content:flex-end;margin-top:8px;"><button onclick="submitQuiz()" style="padding:9px 22px;background:var(--green);color:#fff;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:700;border:none;border-radius:8px;cursor:pointer;">Submit ↵</button></div>`
+    :`<div style="display:flex;justify-content:flex-end;margin-top:8px;"><button onclick="saveAndNext()" style="padding:9px 22px;background:var(--gold);color:#0a0e14;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:700;border:none;border-radius:8px;cursor:pointer;">Next → <span style="font-size:0.68rem;opacity:0.65;">(Enter)</span></button></div>`;
+  document.getElementById('question-area').innerHTML=`
+    <div class="q-header">
+      <span class="q-num">Q ${i+1} / ${quiz.length}</span>
+      ${examLabel?`<span class="q-exam-tag">${examLabel}</span>`:''}
+      ${isMarked?`<span style="font-size:0.65rem;background:var(--purple-dim);color:var(--purple);border:1px solid var(--purple);padding:3px 8px;border-radius:4px;">⚑ Marked</span>`:''}
+    </div>
+    <div class="q-card"><div class="q-text">${q.question}</div></div>
+    <div class="options-grid">${optionsHtml}</div>
+    ${inlineBtn}
+    <div class="explanation" id="explanation">
+      <div class="exp-header">
+        <span class="exp-title">Explanation</span>
+        <span class="exp-correct-ans">✓ ${q.correctAnswer}</span>
+      </div>
+      <div class="exp-body">${q.explanation||'No explanation available.'}</div>
+    </div>`;
+  if(i===quiz.length-1){document.getElementById('btn-next').style.display='none';document.getElementById('btn-submit').style.display='';}
+  else{document.getElementById('btn-next').style.display='';document.getElementById('btn-submit').style.display='none';}
+  const bookmarks=getBookmarks(), bBtn=document.getElementById('btn-bookmark');
+  if(bBtn){const isB=!!bookmarks[quiz[i]?.uid];bBtn.textContent=isB?'🔖 Bookmarked':'🔖 Bookmark';bBtn.style.borderColor=isB?'var(--cyan)':'var(--border)';bBtn.style.background=isB?'var(--cyan-dim)':'var(--surface2)';}
+}
+
+function selectOption(key){state.answers[state.current]=key;renderQuestion();renderPalette();updateStats();}
+function toggleBookmark(){const q=quiz[state.current];if(!q)return;const b=getBookmarks();if(b[q.uid])removeFromBookmarks(q.uid,false);else addToBookmarks(q);renderQuestion();}
+function saveAndNext(){if(state.current<quiz.length-1){state.current++;state.visited[state.current]=true;renderQuestion();renderPalette();updateStats();}}
+function goToPrev(){if(state.current>0){state.current--;renderQuestion();renderPalette();updateStats();}}
+function markForReview(){state.marked[state.current]=!state.marked[state.current];renderQuestion();renderPalette();updateStats();}
+function clearResponse(){state.answers[state.current]=null;renderQuestion();renderPalette();updateStats();}
+function toggleExplanation(){document.getElementById('explanation')?.classList.toggle('show');}
+
+function renderPalette(){
+  document.getElementById('palette-grid').innerHTML=quiz.map((q,i)=>{
+    let cls='pal-btn';
+    if(i===state.current)cls+=' current';
+    else if(state.answers[i]&&state.marked[i])cls+=' answered-marked';
+    else if(state.answers[i])cls+=' answered';
+    else if(state.marked[i])cls+=' marked';
+    else if(state.visited[i])cls+=' visited';
+    return `<button class="${cls}" onclick="jumpTo(${i})">${i+1}</button>`;
+  }).join('');
+}
+function jumpTo(i){state.current=i;state.visited[i]=true;renderQuestion();renderPalette();updateStats();}
+function updateStats(){
+  const ans=state.answers.filter(a=>a!==null).length,mark=state.marked.filter(Boolean).length,skip=quiz.length-ans;
+  document.getElementById('stat-ans').textContent=ans;document.getElementById('stat-skip').textContent=skip;document.getElementById('stat-mark').textContent=mark;
+}
+
+function startTimer(){
+  let remaining=totalSecs;
+  document.getElementById('timer-display').textContent=formatTime(remaining);
+  timerInterval=setInterval(()=>{if(paused)return;remaining--;document.getElementById('timer-display').textContent=formatTime(remaining);if(remaining<=60)document.getElementById('timer-display').classList.add('urgent');if(remaining<=0){clearInterval(timerInterval);submitQuiz();}},1000);
+}
+function togglePause(){paused=!paused;document.getElementById('pause-btn').textContent=paused?'Resume':'Pause';}
+function formatTime(s){const m=Math.floor(s/60),sec=s%60;return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;}
+function formatDuration(ms){const s=Math.floor(ms/1000),m=Math.floor(s/60),sec=s%60;return m>0?`${m}m ${sec}s`:`${sec}s`;}
+
+function submitQuiz(){
+  const confirmed=state.answers.filter(a=>a!==null).length===quiz.length||confirm(`${state.answers.filter(a=>a===null).length} questions unanswered. Submit anyway?`);
+  if(!confirmed)return;
+  clearInterval(timerInterval);
+  const elapsed=new Date()-quizMeta.startTime;
+  let correct=0,wrong=0;
+  lastResults=quiz.map((q,i)=>{
+    const userKey=state.answers[i],isCorrect=userKey===q.correctKey,isSkipped=userKey===null;
+    if(isCorrect)correct++;else if(!isSkipped)wrong++;
+    return{q,userKey,isCorrect,isSkipped};
+  });
+  const h=getHistory();
+  h.unshift({date:new Date().toISOString(),correct,wrong,total:quiz.length,subject:currentSubjectId,chapter:Array.from(selectedChapters).join(',')});
+  if(h.length>50)h.pop(); saveHistory(h);
+  const wrongResults=lastResults.filter(r=>!r.isCorrect&&!r.isSkipped);
+  const correctResults=lastResults.filter(r=>r.isCorrect);
+  const skippedResults=lastResults.filter(r=>r.isSkipped);
+  if(wrongResults.length)addToMistakes(wrongResults);
+  if(skippedResults.length)addToSkips(skippedResults.map(r=>r.q));
+  if(correctResults.length)processCorrectAnswers(correctResults);
+  const pct=Math.round(correct/quiz.length*100),skip=quiz.length-correct-wrong;
+  const subj=SUBJECTS_CONFIG.find(s=>s.id===currentSubjectId);
+  const chLabel=quizMeta.chapter||'';
+  document.getElementById('res-eyebrow').textContent=`${subj?.name||''} · ${chLabel.substring(0,50)}`;
+  document.getElementById('res-score').textContent=pct+'%';
+  document.getElementById('res-score').style.color=pct>=70?'var(--green)':pct>=50?'var(--gold)':'var(--red)';
+  document.getElementById('res-grade').textContent=pct>=80?'🏆 Excellent!':pct>=60?'✅ Good Performance':pct>=40?'⚡ Keep Practicing':'📖 Needs More Practice';
+  document.getElementById('rs-correct').textContent=correct;
+  document.getElementById('rs-wrong').textContent=wrong;
+  document.getElementById('rs-skip').textContent=skip;
+  document.getElementById('rs-time').textContent=formatDuration(elapsed);
+  document.getElementById('btn-retry-wrong').style.display=wrong>0?'':'none';
+  buildReview('all'); showScreen('result-screen'); buildDashboard();
+}
+
+function buildReview(filter){
+  document.getElementById('review-body').innerHTML=lastResults.map((r,idx)=>{
+    const{q,userKey,isCorrect,isSkipped}=r;
+    const status=isSkipped?'skipped':isCorrect?'correct':'wrong';
+    const show=filter==='all'||filter===status;
+    const examLabel=[q.exam,q.year&&q.year!=='Unknown'?q.year:''].filter(Boolean).join(' · ');
+    const optionsHtml=(shuffledOptionOrders[idx]||Object.keys(q.options)).map(key=>{
+      const text=q.options[key];if(!text)return '';
+      const isCA=key===q.correctKey,isUA=key===userKey;
+      let cls='rev-opt'; if(isCA)cls+=' correct-ans'; else if(isUA&&!isCorrect)cls+=' user-wrong';
+      return `<div class="${cls}">${isCA?'✓ ':isUA?'✗ ':''}${text}</div>`;
+    }).join('');
+    return `<div class="review-item ${show?'show':''}" data-status="${status}">
+      <div class="rev-meta"><span class="rev-num">Q${idx+1}</span>${examLabel?`<span class="rev-exam">${examLabel}</span>`:''}<span class="rev-correct-badge ${status}">${isSkipped?'— Skipped':isCorrect?'✓ Correct':'✗ Wrong'}</span></div>
+      <div class="rev-q">${q.question}</div>
+      <div class="rev-options">${optionsHtml}</div>
+      ${q.explanation?`<div class="rev-exp">${q.explanation}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function filterReview(filter,btn){
+  document.querySelectorAll('.rflt-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+  document.querySelectorAll('.review-item').forEach(el=>el.classList.toggle('show',filter==='all'||el.dataset.status===filter));
+}
+function retryWrong(){const qs=lastResults.filter(r=>!r.isCorrect&&!r.isSkipped).map(r=>r.q);if(!qs.length)return;showScreen('setup-screen');startQuiz('wrong',qs);}
+
+// ══════════════════════════════════════════════════
+// BANK SCREENS
+// ══════════════════════════════════════════════════
+function ccDotsHtml(cc){let d='';for(let i=0;i<MASTERY;i++)d+=`<div class="cc-dot${i<cc?' filled':''}"></div>`;return `<div class="cc-dots">${d}<span class="cc-label">${cc}/${MASTERY} correct to master</span></div>`;}
+
+function bankItemHtml(entry,bankType){
+  const q=entry.q,times=entry.times||1,cc=entry.correctCount||0,showDots=bankType==='mistake'||bankType==='skip';
+  return `<div class="bank-item">
+    <div class="bank-item-top">
+      <span class="bank-tag ${bankType}">${bankType.toUpperCase()}</span>
+      <span style="font-size:0.6rem;background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,168,76,0.3);padding:2px 6px;border-radius:3px;font-weight:700;">${q.chapter||''}</span>
+      <span class="bank-times">Seen ${times}×</span>
+      <button class="bank-btn" style="margin-left:auto;" onclick="archiveOneFromBank('${q.uid}','${bankType}')">Archive</button>
+    </div>
+    <div class="bank-q">${q.question}</div>
+    <div class="bank-ans">✓ ${q.correctAnswer}</div>
+    ${showDots?ccDotsHtml(cc):''}
+  </div>`;
+}
+
+function archiveOneFromBank(uid,bankType){
+  if(bankType==='mistake'){const b=getMistakes();if(!b[uid])return;archiveQuestion(b[uid].q,'mistake');delete b[uid];saveMistakes(b);showMistakeScreen();}
+  else if(bankType==='bookmark'){removeFromBookmarks(uid,true);showBookmarkScreen();}
+  else if(bankType==='skip'){const b=getSkips();if(!b[uid])return;archiveQuestion(b[uid].q,'skip');delete b[uid];saveSkips(b);showSkipScreen();}
+  updateAllBadges();
+}
+
+function practiceFromBank(bank,mode){
+  const qs=Object.values(bank).map(e=>e.q);
+  if(!qs.length){alert('No questions in bank!');return;}
+  // Load the subject of the first question
+  const firstSubjId=qs[0].uid.split('_')[0]+'_'+qs[0].uid.split('_')[1];
+  // Actually uid is like subjectId_index, we stored the subject in the q object
+  // We need allQuestions loaded — load the subject then start
+  const subjId=qs[0]._subjectId||qs[0].uid.split('_').slice(0,-1).join('_');
+  currentSubjectId=subjId;
+  showScreen('setup-screen');
+  startQuiz(mode,qs);
+}
+
+function showMistakeScreen(){const b=getMistakes(),items=Object.values(b);document.getElementById('mistake-count-lbl').textContent=`${items.length} question${items.length!==1?'s':''}`;document.getElementById('mistake-list').innerHTML=items.length?items.map(e=>bankItemHtml(e,'mistake')).join(''):'<div style="padding:30px;text-align:center;color:var(--text3);font-size:0.82rem;">No mistakes yet! Keep practicing. 🎉</div>';showScreen('mistake-screen');}
+function clearAllMistakes(){if(!confirm('Archive all mistakes?'))return;const b=getMistakes();Object.values(b).forEach(e=>archiveQuestion(e.q,'mistake'));saveMistakes({});updateAllBadges();showMistakeScreen();}
+function practiceFromMistakes(){practiceFromBank(getMistakes(),'mistakes');}
+
+function showBookmarkScreen(){const b=getBookmarks(),items=Object.values(b);document.getElementById('bookmark-count-lbl').textContent=`${items.length} question${items.length!==1?'s':''}`;document.getElementById('bookmark-list').innerHTML=items.length?items.map(e=>bankItemHtml(e,'bookmark')).join(''):'<div style="padding:30px;text-align:center;color:var(--text3);font-size:0.82rem;">No bookmarks yet! Tap 🔖 during a quiz.</div>';showScreen('bookmark-screen');}
+function clearAllBookmarks(){if(!confirm('Archive all bookmarks?'))return;const b=getBookmarks();Object.values(b).forEach(e=>archiveQuestion(e.q,'bookmark'));saveBookmarks({});updateAllBadges();showBookmarkScreen();}
+function practiceFromBookmarks(){practiceFromBank(getBookmarks(),'bookmarks');}
+
+function showSkipScreen(){const b=getSkips(),items=Object.values(b);document.getElementById('skip-count-lbl').textContent=`${items.length} question${items.length!==1?'s':''}`;document.getElementById('skip-list').innerHTML=items.length?items.map(e=>bankItemHtml(e,'skip')).join(''):'<div style="padding:30px;text-align:center;color:var(--text3);font-size:0.82rem;">No skipped questions. ✅</div>';showScreen('skip-screen');}
+function clearAllSkips(){if(!confirm('Archive all skips?'))return;const b=getSkips();Object.values(b).forEach(e=>archiveQuestion(e.q,'skip'));saveSkips({});updateAllBadges();showSkipScreen();}
+function practiceFromSkips(){practiceFromBank(getSkips(),'skips');}
+
+function showArchiveScreen(){
+  const arc=getArchive(),items=Object.values(arc).sort((a,b)=>new Date(b.archivedAt)-new Date(a.archivedAt));
+  document.getElementById('archive-count-lbl').textContent=`${items.length} question${items.length!==1?'s':''}`;
+  document.getElementById('archive-list').innerHTML=items.length?items.map(e=>`<div class="bank-item">
+    <div class="bank-item-top"><span class="bank-tag archive">ARCHIVED</span><span class="from-badge ${e.fromBank}">${e.fromBank.toUpperCase()}</span><span style="font-size:0.6rem;background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,168,76,0.3);padding:2px 6px;border-radius:3px;font-weight:700;">${e.q.chapter||''}</span><span class="bank-times" style="margin-left:auto;">${new Date(e.archivedAt).toLocaleDateString()}</span></div>
+    <div class="bank-q">${e.q.question}</div><div class="bank-ans">✓ ${e.q.correctAnswer}</div></div>`).join('')
+    :'<div style="padding:30px;text-align:center;color:var(--text3);font-size:0.82rem;">Archive is empty. Master questions to fill it! 🏆</div>';
+  showScreen('archive-screen');
+}
+function clearAllArchive(){if(confirm('Permanently delete all archived questions?')){saveArchive({});updateAllBadges();showArchiveScreen();}}
+
+// ══════════════════════════════════════════════════
+// SCREEN + NAV
+// ══════════════════════════════════════════════════
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function backToSetup(){clearInterval(timerInterval);showScreen('setup-screen');buildDashboard();}
+function confirmHome(){const ans=state.answers?.filter(a=>a!==null).length||0;if(ans>0&&!confirm('Exit quiz? Progress will be lost.'))return;backToSetup();}
+
+// ══════════════════════════════════════════════════
+// THEME
+// ══════════════════════════════════════════════════
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  const btn=document.getElementById('theme-btn');
+  if(btn)btn.textContent=t==='light'?'🌙':'☀️';
+  localStorage.setItem('priya_theme',t);
+}
+function toggleTheme(){const cur=document.documentElement.getAttribute('data-theme')||'dark';applyTheme(cur==='dark'?'light':'dark');}
+
+// ══════════════════════════════════════════════════
+// KEYBOARD
+// ══════════════════════════════════════════════════
+document.addEventListener('keydown',function(e){
+  const qs=document.getElementById('quiz-screen');
+  if(!qs||!qs.classList.contains('active'))return;
+  if(paused)return;
+  if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;
+  if(e.code==='Space'){
+    e.preventDefault();
+    const i=state.current;
+    const keys=(shuffledOptionOrders[i]||Object.keys(quiz[i].options)).filter(k=>quiz[i].options[k]);
+    const cur=state.answers[i],idx=keys.indexOf(cur),next=idx+1;
+    state.answers[i]=next<keys.length?keys[next]:null;
+    renderQuestion();renderPalette();updateStats();
+  }
+  if(e.code==='Enter'){e.preventDefault();if(state.current===quiz.length-1)submitQuiz();else saveAndNext();}
+  if(e.code==='KeyB'){e.preventDefault();toggleBookmark();}
+  if(e.code==='KeyP'){e.preventDefault();goToPrev();}
+});
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+async function init(){
+  const saved=localStorage.getItem('priya_theme')||'dark';
+  applyTheme(saved);
+  buildSubjectSidebar();
+  buildDashboard();
+  updateAllBadges();
+
+  // Auto-start from URL params (when coming from index.html)
+  const params = new URLSearchParams(window.location.search);
+  const subjKey = params.get('subject');
+  const chIdx   = params.get('chapter'); // numeric index or null
+
+  if(subjKey){
+    const subj = SUBJECTS_CONFIG.find(s=>s.id===subjKey);
+    if(!subj) return;
+    // Open sidebar item
+    const item=document.getElementById('subj-item-'+subjKey);
+    const hdr=document.getElementById('subj-hdr-'+subjKey);
+    const arrow=document.getElementById('subj-arrow-'+subjKey);
+    if(item){ item.classList.add('open'); hdr?.classList.add('active'); if(arrow)arrow.style.transform='rotate(90deg)'; }
+    currentSubjectId=subjKey;
+    showLoadingPanel(subj.name);
+    // Load data
+    try {
+      const resp=await fetch(subj.file);
+      if(!resp.ok) throw new Error();
+      const data=await resp.json();
+      processData(data, subjKey);
+      renderChapterSidebar(subjKey);
+    } catch(e){ document.getElementById('subject-panel').innerHTML=`<div style="padding:40px;text-align:center;color:var(--red);">⚠ Failed to load data.</div>`; return; }
+
+    // Determine chapter filter from index
+    let chapterName = 'all';
+    if(chIdx !== null){
+      const chapters = Object.keys(chapterMap);
+      const idx = parseInt(chIdx);
+      if(!isNaN(idx) && chapters[idx]) chapterName = chapters[idx];
+    }
+    currentChapter = chapterName;
+
+    // Update sidebar active state
+    document.querySelectorAll('#ch-list-'+subjKey+' .ch-item, #ch-list-'+subjKey+' .ch-all-item').forEach(el=>el.classList.remove('active'));
+    if(chapterName==='all') document.getElementById('ch-all-item')?.classList.add('active');
+    else document.querySelectorAll('[data-chapter]').forEach(el=>{if(el.dataset.chapter===chapterName)el.classList.add('active');});
+
+    renderSubjectPanel(subjKey, chapterName);
+  }
+}
+init();
+</script>
 </body>
 </html>
+
