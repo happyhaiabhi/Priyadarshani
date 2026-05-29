@@ -752,9 +752,8 @@ function updateHeroCounts(){
 }
 
 function buildDashboard(){
-  const hRaw=getHistory(),mistakes=Object.keys(getMistakes()).length;
-  const h=Array.isArray(hRaw)?hRaw:Object.values(hRaw||{});
-  const ta=h.reduce((s,e)=>s+(e.correct||0)+(e.wrong||0),0),tc=h.reduce((s,e)=>s+(e.correct||0),0);
+  const h=getHistory(),mistakes=Object.keys(getMistakes()).length;
+  const ta=h.reduce((s,e)=>s+e.correct+e.wrong,0),tc=h.reduce((s,e)=>s+e.correct,0);
   const acc=ta>0?Math.round(tc/ta*100):0;
   document.getElementById('dash-accuracy').textContent=ta>0?acc+'%':'--';
   document.getElementById('dash-attempted').textContent=ta;document.getElementById('dash-sessions').textContent=h.length;document.getElementById('dash-mistakes').textContent=mistakes;
