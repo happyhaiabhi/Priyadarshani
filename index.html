@@ -327,6 +327,50 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 @media(min-width:600px){#result-screen{padding:24px;}}
 @media(min-width:1024px){#result-screen{padding:32px 24px;}.result-header{padding:32px 40px;}.res-score{font-size:3.2rem;}}
 @media(max-width:599px){.res-stats{grid-template-columns:repeat(2,1fr);}.res-stat{border-bottom:1px solid var(--border);}.result-header{padding:20px 16px;}.result-actions{gap:8px;}.res-btn{padding:9px 14px;font-size:0.75rem;}}
+
+/* SYNC SYSTEM */
+.sync-btn-wrap{position:relative;display:inline-flex;align-items:center;}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--text3);position:absolute;bottom:0px;right:0px;transition:background 0.3s;pointer-events:none;}
+.sync-dot.synced{background:var(--green);}
+.sync-dot.syncing{background:var(--gold);animation:pulse 0.8s infinite;}
+.sync-dot.error{background:var(--red);}
+.sync-dot.offline{background:var(--text3);}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px);}
+.modal-overlay.hidden{display:none;}
+.modal-box{background:var(--surface);border:1.5px solid var(--border);border-radius:20px;width:100%;max-width:520px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.5);}
+.modal-header{padding:16px 20px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.modal-header-icon{font-size:1.2rem;}
+.modal-header-title{font-family:'Cinzel',serif;font-size:0.9rem;font-weight:700;color:var(--text);flex:1;}
+.modal-close{background:var(--surface3);border:1px solid var(--border);color:var(--text3);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;justify-content:center;}
+.modal-body{padding:20px 22px;display:flex;flex-direction:column;gap:14px;max-height:70vh;overflow-y:auto;}
+.modal-desc{font-size:0.78rem;color:var(--text2);line-height:1.6;}
+.modal-steps{display:flex;flex-direction:column;gap:8px;}
+.modal-step{display:flex;gap:10px;align-items:flex-start;font-size:0.73rem;color:var(--text2);line-height:1.5;}
+.modal-step-num{width:20px;height:20px;border-radius:50%;background:var(--gold-dim);border:1px solid var(--gold);color:var(--gold);font-size:0.62rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.modal-link{color:var(--blue);text-decoration:none;font-weight:600;}
+.modal-link:hover{text-decoration:underline;}
+.modal-fields{display:flex;flex-direction:column;gap:10px;}
+.modal-field{display:flex;flex-direction:column;gap:4px;}
+.modal-field label{font-size:0.6rem;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.modal-field input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 12px;font-size:0.78rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;}
+.modal-field input:focus{border-color:var(--gold);}
+.modal-field input::placeholder{color:var(--text3);}
+.modal-footer{padding:12px 20px;background:var(--surface2);border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;}
+.modal-btn{padding:8px 16px;border-radius:8px;font-size:0.76rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;border:none;}
+.modal-btn-primary{background:var(--gold);color:#0a0e14;}
+.modal-btn-primary:hover{background:var(--gold2);}
+.modal-btn-secondary{background:var(--surface3);color:var(--text2);border:1px solid var(--border);}
+.modal-btn-secondary:hover{border-color:var(--border2);}
+.modal-btn-danger{background:var(--red-dim);color:var(--red);border:1px solid var(--red);}
+.modal-status{font-size:0.72rem;padding:8px 12px;border-radius:8px;display:none;}
+.modal-status.show{display:block;}
+.modal-status.ok{background:var(--green-dim);color:var(--green);border:1px solid var(--green);}
+.modal-status.err{background:var(--red-dim);color:var(--red);border:1px solid var(--red);}
+.modal-status.info{background:var(--blue-dim);color:var(--blue);border:1px solid var(--blue);}
+.sync-pull-bar{background:var(--orange-dim);border:1px solid var(--orange);border-radius:8px;padding:10px 14px;font-size:0.73rem;color:var(--orange);display:none;align-items:center;gap:8px;flex-wrap:wrap;width:100%;max-width:960px;}
+.sync-pull-bar.show{display:flex;}
+#sync-toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);color:var(--text2);padding:7px 18px;border-radius:20px;font-size:0.72rem;z-index:9998;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.3);}
+
 </style>
 </head>
 <body>
@@ -345,13 +389,65 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <button class="nav-btn-pill" onclick="showBookmarkScreen()">&#x1F516; <span class="nav-btn-label">Bookmarks</span> <span class="nav-badge-pill" style="background:var(--cyan);" id="bookmark-badge">0</span></button>
     <button class="nav-btn-pill" onclick="showSkipScreen()">&#x23ED; <span class="nav-btn-label">Skips</span> <span class="nav-badge-pill" style="background:var(--purple);" id="skip-badge">0</span></button>
     <button class="nav-btn-pill" onclick="showArchiveScreen()">&#x1F5C3; <span class="nav-btn-label">Archive</span> <span class="nav-badge-pill" style="background:var(--surface3);color:var(--text3);" id="archive-badge">0</span></button>
+    <button class="nav-btn-pill sync-btn-wrap" id="sync-nav-btn" onclick="openSyncModal()" style="position:relative;">☁ <span class="nav-btn-label">Sync</span><div class="sync-dot offline" id="sync-status-dot" title="Sync Off"></div></button>
     <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Toggle theme">&#x2600;&#xFE0F;</button>
   </div>
+
+<!-- SYNC MODAL -->
+<div class="modal-overlay hidden" id="sync-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-header-icon">&#x2601;</span>
+      <span class="modal-header-title">Cloud Sync</span>
+      <button class="modal-close" onclick="closeSyncModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- SIGN-IN VIEW -->
+      <div id="sync-view-signin">
+        <div class="modal-desc">Sign in with Google to sync your mistakes, bookmarks &amp; history across all devices automatically.</div>
+        <div style="display:flex;justify-content:center;margin:24px 0 8px;">
+          <button onclick="signInWithGoogle()" id="google-signin-btn" style="display:flex;align-items:center;gap:12px;background:#fff;color:#3c4043;border:1px solid #dadce0;border-radius:8px;padding:12px 24px;font-size:0.95rem;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.2);transition:box-shadow 0.2s;">
+            <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-3.59-13.46-8.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+            Sign in with Google
+          </button>
+        </div>
+        <div class="modal-status" id="sync-modal-status"></div>
+      </div>
+
+      <!-- SIGNED-IN VIEW -->
+      <div id="sync-view-connected" style="display:none;">
+        <div style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--surface3);border-radius:10px;margin-bottom:16px;">
+          <img id="sync-user-photo" src="" width="40" height="40" style="border-radius:50%;display:none;">
+          <div>
+            <div id="sync-user-name" style="font-weight:600;font-size:0.95rem;color:var(--text1);"></div>
+            <div id="sync-user-email" style="font-size:0.78rem;color:var(--text3);"></div>
+          </div>
+          <div style="margin-left:auto;font-size:0.75rem;color:var(--green);">✔ Synced</div>
+        </div>
+        <div class="modal-desc" style="font-size:0.8rem;">Your progress syncs automatically across all devices when signed in with the same Google account.</div>
+        <div class="modal-status" id="sync-modal-status-connected"></div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn modal-btn-danger" id="sync-disconnect-btn" onclick="disconnectSync()" style="display:none;margin-right:auto;">Sign Out</button>
+      <button class="modal-btn modal-btn-secondary" onclick="closeSyncModal()">Close</button>
+    </div>
+  </div>
+</div>
+<div id="sync-toast"></div>
+
   <div class="setup-main" id="setup-main">
     <div class="stats-hero">
       <div class="sh-item"><div class="sh-val" id="sh-subjects">9</div><div class="sh-lbl">Subjects</div></div>
       <div class="sh-item"><div class="sh-val" id="sh-chapters">&#8212;</div><div class="sh-lbl">Chapters</div></div>
       <div class="sh-item"><div class="sh-val" id="sh-questions">&#8212;</div><div class="sh-lbl">Questions</div></div>
+    </div>
+    <div class="sync-pull-bar" id="sync-pull-bar">
+      &#x26A0;&#xFE0F; Cloud has newer data &mdash;
+      <button onclick="pullFromCloud(true)" style="background:var(--gold);color:#0a0e14;border:none;padding:4px 12px;border-radius:5px;font-size:0.68rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Pull Cloud Data</button>
+      <button onclick="document.getElementById('sync-pull-bar').classList.remove('show')" style="background:transparent;border:none;color:var(--orange);cursor:pointer;font-size:0.7rem;font-family:'DM Sans',sans-serif;padding:2px;">Dismiss</button>
     </div>
     <div class="dashboard-card">
       <div class="dashboard-header">
@@ -520,11 +616,11 @@ let currentSubjectId=null,selectedChapters=new Set(),allQuestions=[],chapterMap=
 let quiz=[],state={},quizMeta={},timerInterval=null,paused=false,totalSecs=0,lastResults=[],shuffledOptionOrders=[];
 
 const LS={get:(k,d={})=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d));}catch(e){return d;}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
-const getHistory=()=>LS.get('priya_history',[]);const saveHistory=h=>LS.set('priya_history',h);
-const getMistakes=()=>LS.get('priya_mistakes',{});const saveMistakes=m=>LS.set('priya_mistakes',m);
-const getBookmarks=()=>LS.get('priya_bookmarks',{});const saveBookmarks=b=>LS.set('priya_bookmarks',b);
-const getSkips=()=>LS.get('priya_skips',{});const saveSkips=s=>LS.set('priya_skips',s);
-const getArchive=()=>LS.get('priya_archive',{});const saveArchive=a=>LS.set('priya_archive',a);
+const getHistory=()=>LS.get('priya_history',[]);let saveHistory=h=>LS.set('priya_history',h);
+const getMistakes=()=>LS.get('priya_mistakes',{});let saveMistakes=m=>LS.set('priya_mistakes',m);
+const getBookmarks=()=>LS.get('priya_bookmarks',{});let saveBookmarks=b=>LS.set('priya_bookmarks',b);
+const getSkips=()=>LS.get('priya_skips',{});let saveSkips=s=>LS.set('priya_skips',s);
+const getArchive=()=>LS.get('priya_archive',{});let saveArchive=a=>LS.set('priya_archive',a);
 const MASTERY=5;
 
 function archiveQuestion(q,fromBank){const arc=getArchive();arc[q.uid]={q,fromBank,archivedAt:new Date().toISOString()};saveArchive(arc);updateAllBadges();}
@@ -797,7 +893,286 @@ document.addEventListener('keydown',function(e){
   if(e.code==='KeyP'){e.preventDefault();goToPrev();}
 });
 
-function init(){const saved=localStorage.getItem('priya_theme')||'dark';applyTheme(saved);buildSubjectsGrid();buildDashboard();updateAllBadges();}
+// ════════════════════════════════════════════════════════════════
+// FIREBASE CLOUD SYNC LAYER
+// ════════════════════════════════════════════════════════════════
+const SYNC_DATA_KEYS = ['priya_mistakes','priya_bookmarks','priya_skips','priya_history','priya_archive'];
+
+/* ── HARDCODED FIREBASE CONFIG ───────────────────────────────── */
+const FIREBASE_CFG = {
+  apiKey: "AIzaSyB5vVuyG2NbMdTUOY78NlZ702mlkmmPuFA",
+  authDomain: "mcq-practise-ff181.firebaseapp.com",
+  projectId: "mcq-practise-ff181"
+};
+
+let fbDb = null, fbAuth = null, fbUserId = null, syncListeners = [], syncStatus = 'offline';
+
+function getSyncConfig(){ return LS.get('priya_sync_cfg', null); }
+function saveSyncConfig(c){ LS.set('priya_sync_cfg', c); }
+
+function setSyncStatus(s){
+  syncStatus = s;
+  const dot = document.getElementById('sync-status-dot');
+  if(!dot) return;
+  dot.className = 'sync-dot ' + s;
+  const labels = {synced:'Synced \u2714',syncing:'Syncing\u2026',error:'Sync Error \u26A0',offline:'Sync Off'};
+  dot.title = labels[s] || s;
+}
+
+function loadScript(src){
+  return new Promise((res, rej) => {
+    if(document.querySelector('script[src="'+src+'"]')){ res(); return; }
+    const s = document.createElement('script'); s.src = src;
+    s.onload = res; s.onerror = rej; document.head.appendChild(s);
+  });
+}
+
+async function ensureFirebaseSDK(){
+  if(window.firebase && window.firebase.auth) return true;
+  try{
+    await loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
+    await loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js');
+    await loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js');
+    return true;
+  }catch(e){ console.error('Firebase SDK load failed', e); return false; }
+}
+
+async function initFirebase(){
+  const ok = await ensureFirebaseSDK();
+  if(!ok) return false;
+  try{
+    const existing = window.firebase.apps.find(a => a.name === 'priyadarshani');
+    if(existing) await existing.delete();
+    const app = window.firebase.initializeApp(FIREBASE_CFG, 'priyadarshani');
+    fbDb = window.firebase.firestore(app);
+    fbAuth = window.firebase.auth(app);
+    return true;
+  }catch(e){ console.error('Firebase init error:', e); return false; }
+}
+
+/* ── GOOGLE SIGN-IN ──────────────────────────────────────────── */
+async function signInWithGoogle(){
+  const btn = document.getElementById('google-signin-btn');
+  if(btn){ btn.disabled = true; btn.style.opacity = '0.7'; }
+  showSyncModalStatus('Opening Google sign-in…', 'info');
+  const ok = await initFirebase();
+  if(!ok){ showSyncModalStatus('Firebase init failed.', 'err'); if(btn){btn.disabled=false;btn.style.opacity='1';} return; }
+  try{
+    const provider = new window.firebase.auth.GoogleAuthProvider();
+    const result = await fbAuth.signInWithPopup(provider);
+    const user = result.user;
+    fbUserId = user.uid;
+    const cfg = { userId: user.uid, email: user.email, name: user.displayName, photo: user.photoURL };
+    saveSyncConfig(cfg);
+    showSignedInUI(cfg);
+    setSyncStatus('syncing');
+    await pushAllToCloud();
+    setupRealtimeListeners();
+    setSyncStatus('synced');
+    updateSyncNavBtn(true);
+    showSyncToast('Signed in as ' + user.displayName);
+    setTimeout(() => closeSyncModal(), 1500);
+  }catch(e){
+    showSyncModalStatus('Sign-in failed: ' + e.message, 'err');
+    if(btn){btn.disabled=false;btn.style.opacity='1';}
+  }
+}
+
+function showSignedInUI(cfg){
+  const vs = document.getElementById('sync-view-signin');
+  const vc = document.getElementById('sync-view-connected');
+  if(vs) vs.style.display = 'none';
+  if(vc) vc.style.display = '';
+  document.getElementById('sync-disconnect-btn').style.display = '';
+  if(cfg.name){ const el=document.getElementById('sync-user-name'); if(el) el.textContent=cfg.name; }
+  if(cfg.email){ const el=document.getElementById('sync-user-email'); if(el) el.textContent=cfg.email; }
+  if(cfg.photo){ const img=document.getElementById('sync-user-photo'); if(img){img.src=cfg.photo;img.style.display='';} }
+}
+
+/* ── CONNECT (no-op, replaced by Google sign-in) ─────────────── */
+async function connectSync(){ }
+
+/* ── PUSH ALL ─────────────────────────────────────────────────── */
+async function pushAllToCloud(){
+  if(!fbDb || !fbUserId) return;
+  setSyncStatus('syncing');
+  try{
+    const batch = fbDb.batch();
+    SYNC_DATA_KEYS.forEach(k => {
+      const ref = fbDb.collection('users').doc(fbUserId).collection('data').doc(k);
+      batch.set(ref, {payload: JSON.stringify(LS.get(k, {})), updatedAt: Date.now()});
+    });
+    await batch.commit();
+    setSyncStatus('synced');
+  }catch(e){ setSyncStatus('error'); console.error('Push error:', e); }
+}
+
+/* ── PULL ──────────────────────────────────────────────────────── */
+async function pullFromCloud(force){
+  if(!fbDb || !fbUserId) return;
+  try{
+    const snap = await fbDb.collection('users').doc(fbUserId).collection('data').get();
+    snap.forEach(doc => {
+      const data = doc.data(); if(!data || !data.payload) return;
+      const key = doc.id; if(!SYNC_DATA_KEYS.includes(key)) return;
+      const cloudVal = JSON.parse(data.payload);
+      if(force){
+        LS.set(key, cloudVal);
+      }else{
+        const local = LS.get(key, {});
+        if(Array.isArray(cloudVal)){
+          // history: merge by date, deduplicate
+          const all = [...(Array.isArray(local)?local:[]), ...cloudVal];
+          const seen = new Set();
+          const merged = all.filter(e => { const k = e.date; if(seen.has(k)) return false; seen.add(k); return true; });
+          merged.sort((a,b) => new Date(b.date) - new Date(a.date));
+          LS.set(key, merged.slice(0, 200));
+        }else{
+          LS.set(key, Object.assign({}, local, cloudVal));
+        }
+      }
+    });
+    updateAllBadges(); buildDashboard();
+    setSyncStatus('synced');
+    const bar = document.getElementById('sync-pull-bar');
+    if(bar) bar.classList.remove('show');
+    if(force) showSyncToast('\u2714 Cloud data pulled successfully');
+  }catch(e){ setSyncStatus('error'); console.error('Pull error:', e); }
+}
+
+/* ── REAL-TIME LISTENERS ──────────────────────────────────────── */
+function setupRealtimeListeners(){
+  syncListeners.forEach(u => u()); syncListeners = [];
+  if(!fbDb || !fbUserId) return;
+  SYNC_DATA_KEYS.forEach(k => {
+    const ref = fbDb.collection('users').doc(fbUserId).collection('data').doc(k);
+    const unsub = ref.onSnapshot(doc => {
+      if(!doc.exists) return;
+      const meta = doc.metadata;
+      if(meta && meta.hasPendingWrites) return; // skip local writes
+      try{
+        const data = doc.data(); if(!data || !data.payload) return;
+        const cloudVal = JSON.parse(data.payload);
+        const local = LS.get(k, {});
+        if(JSON.stringify(local) === JSON.stringify(cloudVal)) return;
+        if(Array.isArray(cloudVal)){
+          const all = [...(Array.isArray(local)?local:[]), ...cloudVal];
+          const seen = new Set();
+          const merged = all.filter(e => { const id = e.date; if(seen.has(id)) return false; seen.add(id); return true; });
+          merged.sort((a,b) => new Date(b.date) - new Date(a.date));
+          LS.set(k, merged.slice(0, 200));
+        }else{
+          LS.set(k, Object.assign({}, local, cloudVal));
+        }
+        updateAllBadges(); buildDashboard();
+        showSyncToast('\u2601 Synced from another device');
+        setSyncStatus('synced');
+      }catch(e){ console.error('Listener merge error:', e); }
+    }, err => { setSyncStatus('error'); console.error('Snapshot error:', err); });
+    syncListeners.push(unsub);
+  });
+}
+
+/* ── PUSH SINGLE KEY (debounced) ─────────────────────────────── */
+const _pushTimers = {};
+function cloudPushKey(k){
+  if(!fbDb || !fbUserId) return;
+  clearTimeout(_pushTimers[k]);
+  _pushTimers[k] = setTimeout(async () => {
+    setSyncStatus('syncing');
+    try{
+      await fbDb.collection('users').doc(fbUserId).collection('data').doc(k)
+               .set({payload: JSON.stringify(LS.get(k, {})), updatedAt: Date.now()});
+      setSyncStatus('synced');
+    }catch(e){ setSyncStatus('error'); console.error('PushKey error:', e); }
+  }, 600);
+}
+
+/* ── OVERRIDE SAVE FUNCTIONS ──────────────────────────────────── */
+const _saveHistory0  = saveHistory;
+const _saveMistakes0 = saveMistakes;
+const _saveBookmarks0= saveBookmarks;
+const _saveSkips0    = saveSkips;
+const _saveArchive0  = saveArchive;
+saveHistory  = (h) => { _saveHistory0(h);   cloudPushKey('priya_history');   };
+saveMistakes = (m) => { _saveMistakes0(m);  cloudPushKey('priya_mistakes');  };
+saveBookmarks= (b) => { _saveBookmarks0(b); cloudPushKey('priya_bookmarks'); };
+saveSkips    = (s) => { _saveSkips0(s);     cloudPushKey('priya_skips');     };
+saveArchive  = (a) => { _saveArchive0(a);   cloudPushKey('priya_archive');   };
+
+/* ── DISCONNECT ───────────────────────────────────────────────── */
+async function disconnectSync(){
+  if(!confirm('Sign out from cloud sync? Your local data will stay.')) return;
+  syncListeners.forEach(u => u()); syncListeners = [];
+  if(fbAuth) try{ await fbAuth.signOut(); }catch(e){}
+  fbDb = null; fbAuth = null; fbUserId = null;
+  localStorage.removeItem('priya_sync_cfg');
+  setSyncStatus('offline');
+  updateSyncNavBtn(false);
+  closeSyncModal();
+  showSyncToast('Signed out from cloud sync');
+}
+
+/* ── MODAL HELPERS ────────────────────────────────────────────── */
+function showSyncModalStatus(msg, type){
+  const el = document.getElementById('sync-modal-status'); if(!el) return;
+  el.textContent = msg; el.className = 'modal-status show ' + type;
+}
+function openSyncModal(){
+  const cfg = getSyncConfig();
+  if(cfg && cfg.userId){
+    showSignedInUI(cfg);
+  }else{
+    const vs = document.getElementById('sync-view-signin');
+    const vc = document.getElementById('sync-view-connected');
+    if(vs) vs.style.display = '';
+    if(vc) vc.style.display = 'none';
+    document.getElementById('sync-disconnect-btn').style.display = 'none';
+  }
+  const statusEl = document.getElementById('sync-modal-status');
+  if(statusEl) statusEl.className = 'modal-status';
+  document.getElementById('sync-modal').classList.remove('hidden');
+}
+function closeSyncModal(){ document.getElementById('sync-modal').classList.add('hidden'); }
+
+/* ── TOAST ────────────────────────────────────────────────────── */
+function showSyncToast(msg){
+  const t = document.getElementById('sync-toast'); if(!t) return;
+  t.textContent = msg; t.style.opacity = '1';
+  clearTimeout(t._to); t._to = setTimeout(() => { t.style.opacity = '0'; }, 2800);
+}
+
+/* ── UPDATE NAV BUTTON ─────────────────────────────────────────── */
+function updateSyncNavBtn(connected){
+  const btn = document.getElementById('sync-nav-btn'); if(!btn) return;
+  btn.innerHTML = connected
+    ? '\u2601 <span class="nav-btn-label">Synced</span><div class="sync-dot synced" id="sync-status-dot" title="Synced \u2714"></div>'
+    : '\u2601 <span class="nav-btn-label">Sync</span><div class="sync-dot offline" id="sync-status-dot" title="Sync Off"></div>';
+}
+
+/* ── AUTO-INIT ON LOAD ─────────────────────────────────────────── */
+async function initSyncOnLoad(){
+  const cfg = getSyncConfig(); if(!cfg || !cfg.userId) return;
+  updateSyncNavBtn(false); setSyncStatus('syncing');
+  const ok = await initFirebase();
+  if(!ok){ setSyncStatus('error'); return; }
+  // Use onAuthStateChanged for silent re-login
+  fbAuth.onAuthStateChanged(async (user) => {
+    if(user){
+      fbUserId = user.uid;
+      await pullFromCloud(false);
+      setupRealtimeListeners();
+      setSyncStatus('synced');
+      updateSyncNavBtn(true);
+    } else {
+      // Not signed in yet — wait, user will sign in via modal
+      setSyncStatus('offline');
+      updateSyncNavBtn(false);
+    }
+  });
+}
+
+function init(){const saved=localStorage.getItem('priya_theme')||'dark';applyTheme(saved);buildSubjectsGrid();buildDashboard();updateAllBadges();initSyncOnLoad();}
 init();
 </script>
 </body>
